@@ -1,0 +1,23 @@
+{
+  "_version": "1.1.0",
+  "_nota": "Claves = nombre de la estación tal como viene en el CSV de la Junta (mayúsculas, sin tildes). Coordenadas APROXIMADAS: verificar con Listado_estaciones.xlsx del portal de datos abiertos y poner aprox=false. Consulta data/estaciones_detectadas.json para ver los nombres reales que llegan.",
+  "estaciones": {
+    "ALGECIRAS EPS":                 { "nombre": "Algeciras EPS",           "municipio": "Algeciras",        "lat": 36.1305, "lon": -5.4470, "aprox": true },
+    "E4: RINCONCILLO":               { "nombre": "El Rinconcillo (E4)",     "municipio": "Algeciras",        "lat": 36.1617, "lon": -5.4425, "aprox": true },
+    "LOS BARRIOS":                   { "nombre": "Los Barrios",             "municipio": "Los Barrios",      "lat": 36.1840, "lon": -5.4950, "aprox": true },
+    "E1: COLEGIO LOS BARRIOS":       { "nombre": "Colegio Los Barrios (E1)", "municipio": "Los Barrios",     "lat": 36.1860, "lon": -5.4900, "aprox": true },
+    "E2: ALCORNOCALES":              { "nombre": "Alcornocales (E2)",       "municipio": "Los Barrios",      "lat": 36.1905, "lon": -5.4830, "aprox": true },
+    "E5: PALMONES":                  { "nombre": "Palmones (E5)",           "municipio": "Los Barrios",      "lat": 36.1765, "lon": -5.4390, "aprox": true },
+    "CORTIJILLOS":                   { "nombre": "Cortijillos",             "municipio": "Los Barrios",      "lat": 36.1890, "lon": -5.4300, "aprox": true },
+    "LA LINEA":                      { "nombre": "La Línea",                "municipio": "La Línea",         "lat": 36.1640, "lon": -5.3480, "aprox": true },
+    "E7: EL ZABAL":                  { "nombre": "El Zabal (E7)",           "municipio": "La Línea",         "lat": 36.1800, "lon": -5.3560, "aprox": true },
+    "CAMPAMENTO":                    { "nombre": "Campamento",              "municipio": "San Roque",        "lat": 36.1880, "lon": -5.3800, "aprox": true },
+    "PUENTE MAYORGA":                { "nombre": "Puente Mayorga",          "municipio": "San Roque",        "lat": 36.1830, "lon": -5.3880, "aprox": true },
+    "ECONOMATO":                     { "nombre": "Economato",               "municipio": "San Roque",        "lat": 36.1920, "lon": -5.3950, "aprox": true },
+    "E3: COLEGIO CARTEYA":           { "nombre": "Colegio Carteya (E3)",    "municipio": "San Roque",        "lat": 36.1900, "lon": -5.4050, "aprox": true },
+    "GUADARRANQUE":                  { "nombre": "Guadarranque",            "municipio": "San Roque",        "lat": 36.1850, "lon": -5.4130, "aprox": true },
+    "E6: ESTACION DE FFCC S. ROQUE": { "nombre": "Estación FFCC San Roque (E6)", "municipio": "San Roque",   "lat": 36.2100, "lon": -5.4000, "aprox": true },
+    "E. DE HOSTELERIA":              { "nombre": "Escuela de Hostelería",   "municipio": "San Roque",        "lat": 36.2080, "lon": -5.3860, "aprox": true },
+    "MADREVIEJA":                    { "nombre": "Madrevieja",              "municipio": "San Roque",        "lat": 36.2300, "lon": -5.3900, "aprox": true }
+  }
+}

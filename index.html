@@ -1,0 +1,1042 @@
+<!doctype html>
+<!-- Aire Rápido · index.html · v1.4.0 -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B5566">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Aire Rápido">
+<title>Aire Rápido · Campo de Gibraltar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== tokens ===== */
+:root {
+  --fondo:#E8F0F2; --papel:#FFFFFF; --tinta:#0F242B; --gris:#5A6B72; --linea:#D3DEE2;
+  --mar:#0B5566; --mar-suave:#D5E8EC; --tierra:#F3EFE5; --agua:#CBE4EB; --costa:#B9C7C2;
+  --sombra:0 1px 2px rgba(15,36,43,.06), 0 6px 18px rgba(15,36,43,.07);
+  --num:"Barlow Semi Condensed","Arial Narrow",system-ui,sans-serif;
+  --txt:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --nav:62px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo:#0C1B20; --papel:#132830; --tinta:#E4EEF1; --gris:#94A8AF; --linea:#22404A;
+    --mar:#63BDD0; --mar-suave:#173A45; --tierra:#1B3037; --agua:#0E2C36; --costa:#2C4851;
+    --sombra:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"] {
+  --fondo:#0C1B20; --papel:#132830; --tinta:#E4EEF1; --gris:#94A8AF; --linea:#22404A;
+  --mar:#63BDD0; --mar-suave:#173A45; --tierra:#1B3037; --agua:#0E2C36; --costa:#2C4851;
+  --sombra:0 1px 2px rgba(0,0,0,.3), 0 6px 18px rgba(0,0,0,.25);
+}
+html { scroll-padding-top:env(safe-area-inset-top,0px); }
+*,*::before,*::after { box-sizing:inherit; }
+html,body { margin:0; background:var(--fondo); color:var(--tinta); }
+body { font:16px/1.4 var(--txt); -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent; padding-bottom:calc(var(--nav) + 8px); }
+button,input { font:inherit; color:inherit; }
+button { cursor:pointer; }
+:focus-visible { outline:3px solid var(--mar); outline-offset:2px; }
+[hidden] { display:none !important; }
+.oculto { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+
+/* ===== cabecera ===== */
+.top { position:sticky; top:env(safe-area-inset-top,0px); z-index:50; background:var(--papel); box-shadow:0 1px 0 var(--linea); padding:12px 14px 10px; display:grid; gap:10px; }
+.brand { display:flex; align-items:center; gap:10px; }
+.logo { width:34px; height:34px; flex:none; }
+.brand h1 { font:700 1.5rem/1 var(--num); margin:0; letter-spacing:-.01em; }
+.brand p { margin:2px 0 0; font-size:.8rem; color:var(--gris); }
+.brand .info { margin-left:auto; width:36px; height:36px; border-radius:50%; border:1px solid var(--linea); background:var(--papel); font:700 1rem var(--num); color:var(--mar); }
+
+.dias { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin:0 -14px; padding:0 14px; }
+.dias::-webkit-scrollbar { display:none; }
+.dia { flex:none; min-width:58px; padding:6px 10px; border-radius:12px; border:1px solid var(--linea); background:var(--papel); text-align:center; line-height:1.1; }
+.dia b { display:block; font:700 1.05rem var(--num); }
+.dia small { font-size:.72rem; color:var(--gris); }
+.dia[aria-pressed=true] { background:var(--mar); border-color:var(--mar); color:#fff; }
+.dia[aria-pressed=true] small { color:rgba(255,255,255,.8); }
+.dia.cal { min-width:46px; font-size:1.2rem; }
+
+.hora { display:flex; align-items:center; gap:10px; }
+.hora output { font:700 1.35rem/1 var(--num); min-width:3.1em; font-variant-numeric:tabular-nums; }
+.hora input { flex:1; accent-color:var(--mar); height:28px; }
+.chip { border:1px solid var(--linea); background:var(--papel); border-radius:999px; padding:5px 12px; font:600 .92rem var(--num); white-space:nowrap; }
+.chip:disabled { opacity:.45; cursor:default; }
+
+.pols { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin:0 -14px; padding:0 14px; }
+.pols::-webkit-scrollbar { display:none; }
+.pols .chip[aria-pressed=true] { background:var(--tinta); border-color:var(--tinta); color:var(--papel); }
+
+.demo { margin:10px 12px 0; padding:9px 12px; border-radius:12px; background:#FFF3D1; color:#5B4300; font-size:.85rem; }
+.demo b { font-weight:700; }
+
+/* ===== vista lista ===== */
+main { max-width:760px; margin:0 auto; }
+.vista { padding:12px; display:grid; gap:10px; }
+
+.hero { border-radius:18px; overflow:hidden; background:var(--papel); box-shadow:var(--sombra); border:0; padding:0; text-align:left; width:100%; }
+.hero-top { padding:14px 16px 12px; display:grid; grid-template-columns:1fr auto; gap:2px 12px; align-items:end; }
+.hero-top .quien { grid-column:1/-1; font-size:.82rem; opacity:.85; }
+.hero-top h2 { margin:0; font:700 1.35rem/1.1 var(--num); }
+.hero-top .lvl { font-weight:600; font-size:.95rem; }
+.hero-top .big { grid-row:2/4; grid-column:2; text-align:right; font:700 3.6rem/.9 var(--num); font-variant-numeric:tabular-nums; }
+.hero-top .big small { display:block; font:500 .75rem var(--txt); opacity:.8; margin-top:4px; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(56px,1fr)); gap:6px; padding:10px 12px 12px; }
+.tile { border-radius:10px; padding:6px 4px 5px; text-align:center; line-height:1.05; }
+.tile span { display:block; font:600 .72rem var(--num); opacity:.85; }
+.tile b { font:700 1.25rem var(--num); font-variant-numeric:tabular-nums; }
+
+.seccion { display:flex; align-items:baseline; justify-content:space-between; margin:6px 4px -2px; }
+.seccion h3 { margin:0; font:600 1.02rem var(--num); color:var(--gris); }
+.seccion button { border:0; background:none; color:var(--mar); font-weight:600; font-size:.9rem; padding:4px 0; }
+
+.est { display:grid; grid-template-columns:6px 1fr auto; align-items:center; gap:0 12px; width:100%; text-align:left; background:var(--papel); border:0; border-radius:14px; padding:0 14px 0 0; box-shadow:var(--sombra); overflow:hidden; min-height:70px; }
+.est .banda { align-self:stretch; }
+.est .nom { display:block; font-weight:600; font-size:1.02rem; padding-top:10px; }
+.est .meta { display:block; font-size:.83rem; color:var(--gris); padding-bottom:10px; }
+.est .der { text-align:right; }
+.est .der b { font:700 2rem/1 var(--num); font-variant-numeric:tabular-nums; }
+.pill { display:inline-block; margin-top:4px; padding:2px 8px; border-radius:999px; font:600 .72rem var(--txt); white-space:nowrap; }
+.vacio { background:var(--papel); border-radius:14px; padding:26px 18px; text-align:center; color:var(--gris); box-shadow:var(--sombra); }
+.vacio strong { display:block; color:var(--tinta); font-size:1.05rem; margin-bottom:6px; }
+
+/* ===== mapa ===== */
+.mapa-wrap { position:relative; margin:12px; border-radius:18px; overflow:hidden; box-shadow:var(--sombra); background:var(--agua); height:var(--alto-mapa,480px); min-height:320px; touch-action:none; }
+.mapa-wrap svg { width:100%; height:100%; display:block; user-select:none; -webkit-user-select:none; }
+.zoom { position:absolute; right:10px; top:10px; display:grid; gap:6px; }
+.zoom button { width:40px; height:40px; border-radius:12px; border:1px solid var(--linea); background:var(--papel); font:700 1.3rem var(--num); box-shadow:var(--sombra); }
+.leyenda { position:absolute; left:10px; bottom:10px; right:10px; display:flex; gap:4px; flex-wrap:wrap; pointer-events:none; }
+.leyenda span { font:600 .68rem var(--txt); padding:3px 7px; border-radius:999px; }
+.pin-txt { font:700 13px var(--num); }
+.lbl-mapa { font:600 12px var(--txt); fill:var(--gris); letter-spacing:.04em; }
+
+/* ===== barra inferior ===== */
+.nav { position:fixed; left:0; right:0; bottom:0; z-index:60; background:var(--papel); box-shadow:0 -1px 0 var(--linea); display:flex; justify-content:center; padding-bottom:env(safe-area-inset-bottom,0px); }
+.nav div { display:flex; width:min(760px,100%); }
+.nav button { flex:1; min-width:0; height:var(--nav); border:0; background:none; display:grid; place-items:center; align-content:center; gap:2px; color:var(--gris); font:600 .8rem var(--txt); }
+.nav svg { width:24px; height:24px; }
+.nav button[aria-current=page] { color:var(--mar); }
+
+.pie { max-width:760px; margin:4px auto 10px; padding:0 16px; font-size:.74rem; color:var(--gris); }
+
+/* ===== hojas (detalle / info) ===== */
+dialog.hoja { width:100%; max-width:760px; height:100dvh; max-height:100dvh; margin:auto auto 0; padding:0; border:0; background:var(--fondo); color:var(--tinta); overflow:auto; overscroll-behavior:contain; }
+@media (min-width:800px) { dialog.hoja { height:92dvh; margin:auto; border-radius:20px; } }
+dialog.hoja::backdrop { background:rgba(8,20,24,.5); }
+dialog.hoja[open] { animation:sube .22s ease-out; }
+@keyframes sube { from { transform:translateY(24px); opacity:.4; } to { transform:none; opacity:1; } }
+.hoja-cab { position:sticky; top:0; z-index:3; padding:calc(14px + env(safe-area-inset-top,0px)) 16px 16px; display:grid; grid-template-columns:1fr auto; gap:4px 12px; }
+.hoja-cab h2 { margin:0; font:700 1.5rem/1.1 var(--num); }
+.hoja-cab p { margin:0; font-size:.85rem; opacity:.85; grid-column:1; }
+.cerrar { grid-row:1/3; grid-column:2; width:38px; height:38px; border-radius:50%; border:0; background:rgba(255,255,255,.35); font-size:1.1rem; align-self:start; }
+.hoja-cuerpo { padding:12px 12px calc(28px + env(safe-area-inset-bottom,0px)); display:grid; gap:12px; }
+.bloque { background:var(--papel); border-radius:16px; padding:14px; box-shadow:var(--sombra); }
+.hoja-cuerpo > *, .bloque > *, #evo > * { min-width:0; }
+.bloque, #evo { min-width:0; overflow:hidden; }
+.bloque h3 { margin:0 0 10px; font:600 1.08rem var(--num); }
+.fila-bot { display:flex; gap:8px; flex-wrap:wrap; }
+.boton { border:1px solid var(--linea); background:var(--papel); border-radius:12px; padding:9px 13px; font-weight:600; font-size:.92rem; }
+.boton.pri { background:var(--mar); border-color:var(--mar); color:#fff; }
+.boton:disabled { opacity:.4; cursor:default; }
+.boton.on { background:var(--tinta); border-color:var(--tinta); color:var(--papel); }
+.aviso { font-size:.82rem; background:#FFF3D1; color:#5B4300; border-radius:10px; padding:8px 10px; }
+.resumen { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-bottom:8px; }
+.resumen div { font-size:.76rem; color:var(--gris); line-height:1.2; }
+.resumen b { display:block; font:700 1.35rem/1.05 var(--num); color:var(--tinta); font-variant-numeric:tabular-nums; }
+.graf { width:100%; height:auto; display:block; }
+.graf-scroll { overflow-x:auto; margin:0 -14px; padding:0 14px; scrollbar-width:thin; overscroll-behavior-x:contain; }
+.graf-scroll svg { display:block; max-width:none; height:auto; }
+.nota { font-size:.78rem; color:var(--gris); margin:4px 0 0; }
+.nota a { color:var(--mar); font-weight:600; }
+.matriz td.c span { min-width:2.4em; padding:2px 4px; font-size:.85rem; }
+.matriz th { font-size:.78rem; }
+.evo-sel { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin:0 -14px; padding:0 14px 2px; }
+.evo-sel::-webkit-scrollbar { display:none; }
+.tabla { overflow-x:auto; margin:0 -4px; }
+table { border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums; }
+th,td { padding:4px 6px; text-align:right; white-space:nowrap; font-size:.92rem; }
+th:first-child,td:first-child { text-align:left; }
+thead th { font:600 .85rem var(--num); color:var(--gris); position:sticky; top:0; background:var(--papel); }
+tbody tr + tr td { border-top:1px solid var(--linea); }
+tfoot td { font-weight:700; border-top:2px solid var(--linea); }
+td.c span { display:inline-block; min-width:3.1em; padding:2px 6px; border-radius:6px; font:700 .95rem var(--num); }
+tr.sel td:first-child { font-weight:700; color:var(--mar); }
+td a { color:var(--mar); font-weight:600; }
+.escala { display:grid; gap:6px; }
+.escala div { display:grid; grid-template-columns:22px 1fr; gap:8px; align-items:center; font-size:.9rem; }
+.escala i { width:22px; height:22px; border-radius:6px; }
+.small { font-size:.85rem; color:var(--gris); }
+.small a { color:var(--mar); }
+
+.polvo-aviso { display:flex; gap:10px; align-items:flex-start; width:100%; text-align:left; border:0; border-radius:14px; padding:10px 12px; background:#F1E3C4; color:#4A3510; font-size:.88rem; box-shadow:var(--sombra); }
+.polvo-aviso b { font-weight:700; }
+.polvo-aviso i { flex:none; width:12px; height:12px; border-radius:50%; margin-top:4px; }
+.sel-est { display:flex; flex-wrap:wrap; gap:6px; }
+.sel-est button { display:inline-flex; align-items:center; gap:6px; }
+.sel-est button i { width:10px; height:10px; border-radius:50%; background:var(--linea); }
+.sel-est button[aria-pressed=true] { border-color:var(--tinta); font-weight:700; }
+.leyenda-cmp { display:grid; gap:6px; margin-bottom:8px; }
+.leyenda-cmp div { display:grid; grid-template-columns:14px 1fr auto auto; gap:8px; align-items:center; font-size:.88rem; }
+.leyenda-cmp i { width:14px; height:4px; border-radius:2px; }
+.leyenda-cmp span { font:600 .85rem var(--num); color:var(--gris); white-space:nowrap; }
+.leyenda-cmp span b { color:var(--tinta); font-size:1rem; }
+.corr td.c span { min-width:3.4em; }
+.frase { margin:10px 0 0; font-size:.92rem; }
+.oficial { display:grid; grid-template-columns:34px 1fr; gap:10px; align-items:center; background:var(--papel); border:2px solid #C9A227; border-radius:14px; padding:10px 12px; box-shadow:var(--sombra); font-size:.88rem; }
+.oficial .ico { width:34px; height:34px; border-radius:8px; background:#C9A227; color:#fff; display:grid; place-items:center; font:700 .72rem var(--num); }
+.oficial a, .enlaces a { color:var(--mar); font-weight:700; }
+.oficial p { margin:0; }
+.enlaces { display:grid; gap:8px; margin:8px 0 0; padding:0; list-style:none; }
+.enlaces li { font-size:.9rem; }
+.enlaces small { display:block; color:var(--gris); font-size:.78rem; }
+a.doc { text-decoration:none; font-size:.85rem; margin-left:4px; }
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+      <rect width="40" height="40" rx="11" fill="#0B5566"/>
+      <path d="M8 15h16a4 4 0 1 0-4-4" fill="none" stroke="#50F0E6" stroke-width="3" stroke-linecap="round"/>
+      <path d="M8 21h22a4 4 0 1 1-4 4" fill="none" stroke="#F0E641" stroke-width="3" stroke-linecap="round"/>
+      <path d="M8 27h9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>Aire Rápido</h1>
+      <p id="estado">Cargando…</p>
+    </div>
+    <button class="info" id="btnInfo" aria-label="Información, colores e informes oficiales">i</button>
+  </div>
+  <div class="dias" id="dias" aria-label="Día"></div>
+  <input type="date" id="fecha" class="oculto" aria-label="Elegir fecha" tabindex="-1">
+  <div class="hora">
+    <output id="horaTxt">--:--</output>
+    <input id="hora" type="range" min="0" max="23" step="1" aria-label="Hora">
+    <button class="chip" id="btnUltima">Última</button>
+  </div>
+  <div class="pols" id="pols" aria-label="Contaminante"></div>
+</header>
+
+<div id="avisoDemo"></div>
+
+<main>
+  <section id="vLista" class="vista" aria-live="polite"></section>
+  <section id="vComp" class="vista" hidden></section>
+  <section id="vMapa" hidden>
+    <div class="mapa-wrap" id="mapaWrap">
+      <svg id="mapa" aria-label="Mapa de estaciones"></svg>
+      <div class="zoom">
+        <button id="zMas" aria-label="Acercar">+</button>
+        <button id="zMenos" aria-label="Alejar">−</button>
+        <button id="zYo" aria-label="Centrar en mi ubicación">◎</button>
+      </div>
+      <div class="leyenda" id="leyendaMapa"></div>
+    </div>
+  </section>
+  <p class="pie">Datos: Red de Vigilancia y Control de la Calidad del Aire de Andalucía, Junta de Andalucía (CC BY 4.0). Valores horarios sin validar. Polvo africano: modelo CAMS de Copernicus vía Open-Meteo (CC BY 4.0). Costa: Natural Earth. Versión <span id="ver"></span></p>
+</main>
+
+<nav class="nav"><div>
+  <button id="tLista" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>Lista</button>
+  <button id="tMapa">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg>Mapa</button>
+  <button id="tComp">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-7 4 4"/><path d="M3 20h18"/></svg>Comparar</button>
+  <button id="tCerca">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/></svg>Cerca de mí</button>
+</div></nav>
+
+<dialog id="detalle" class="hoja" aria-labelledby="detNombre">
+  <div class="hoja-cab" id="detCab">
+    <h2 id="detNombre"></h2>
+    <p id="detSub"></p>
+    <button class="cerrar" id="detCerrar" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="hoja-cuerpo" id="detCuerpo"></div>
+</dialog>
+
+<dialog id="info" class="hoja" aria-labelledby="infoTit">
+  <div class="hoja-cab" style="background:var(--mar);color:#fff">
+    <h2 id="infoTit">Información y fuentes</h2>
+    <p>Colores del índice, polvo africano e informes oficiales</p>
+    <button class="cerrar" id="infoCerrar" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="hoja-cuerpo" id="infoCuerpo"></div>
+</dialog>
+
+<script>
+/* Aire Rápido · app · v1.4.0 */
+'use strict';
+const VERSION = '1.4.0';
+const PRIMER_DIA = '2021-10-25';
+const POLS = ['SO2','NO2','PM10','PM2.5','O3','CO'];
+const POLS_ICA = ['SO2','NO2','PM10','PM2.5','O3'];
+const UNIDAD = { CO:'mg/m³' };
+const BANDAS = { SO2:[100,200,350,500,750], NO2:[40,90,120,230,340], PM10:[20,40,50,100,150], 'PM2.5':[10,20,25,50,75], O3:[50,100,130,240,380] };
+const NIVELES = ['Buena','Razonablemente buena','Regular','Desfavorable','Muy desfavorable','Extremadamente desfavorable'];
+const COLOR = ['#50F0E6','#50CCAA','#F0E641','#FF5050','#960032','#7D2181'];
+const COLOR_TXT = ['#06313A','#06313A','#3A3300','#FFFFFF','#FFFFFF','#FFFFFF'];
+
+/* Catálogo base (stations.json, si existe, lo sobrescribe). Coordenadas aproximadas. */
+const CATALOGO = {
+  'ALGECIRAS EPS':{nombre:'Algeciras EPS',municipio:'Algeciras',lat:36.1305,lon:-5.4470,p:['SO2','NO2','PM10','PM2.5','O3','CO']},
+  'E4: RINCONCILLO':{nombre:'El Rinconcillo',municipio:'Algeciras',lat:36.1617,lon:-5.4425,p:['SO2','NO2','PM10']},
+  'LOS BARRIOS':{nombre:'Los Barrios',municipio:'Los Barrios',lat:36.1840,lon:-5.4950,p:['SO2','NO2','PM10','O3']},
+  'E1: COLEGIO LOS BARRIOS':{nombre:'Colegio Los Barrios',municipio:'Los Barrios',lat:36.1860,lon:-5.4900,p:['SO2','NO2','PM10']},
+  'E2: ALCORNOCALES':{nombre:'Alcornocales',municipio:'Los Barrios',lat:36.1905,lon:-5.4830,p:['SO2','NO2','PM10','O3']},
+  'E5: PALMONES':{nombre:'Palmones',municipio:'Los Barrios',lat:36.1765,lon:-5.4390,p:['SO2','NO2','PM10']},
+  'CORTIJILLOS':{nombre:'Cortijillos',municipio:'Los Barrios',lat:36.1890,lon:-5.4300,p:['SO2','NO2','O3','CO']},
+  'LA LINEA':{nombre:'La Línea',municipio:'La Línea',lat:36.1640,lon:-5.3480,p:['SO2','NO2','PM10','PM2.5','O3']},
+  'E7: EL ZABAL':{nombre:'El Zabal',municipio:'La Línea',lat:36.1800,lon:-5.3560,p:['SO2','NO2','PM10']},
+  'CAMPAMENTO':{nombre:'Campamento',municipio:'San Roque',lat:36.1880,lon:-5.3800,p:['SO2','NO2','O3','CO']},
+  'PUENTE MAYORGA':{nombre:'Puente Mayorga',municipio:'San Roque',lat:36.1830,lon:-5.3880,p:['SO2']},
+  'ECONOMATO':{nombre:'Economato',municipio:'San Roque',lat:36.1920,lon:-5.3950,p:['SO2','NO2']},
+  'E3: COLEGIO CARTEYA':{nombre:'Colegio Carteya',municipio:'San Roque',lat:36.1900,lon:-5.4050,p:['SO2','NO2','PM10','O3']},
+  'GUADARRANQUE':{nombre:'Guadarranque',municipio:'San Roque',lat:36.1850,lon:-5.4130,p:['SO2','NO2','O3','CO']},
+  'E6: ESTACION DE FFCC S. ROQUE':{nombre:'Estación FFCC San Roque',municipio:'San Roque',lat:36.2100,lon:-5.4000,p:['SO2','NO2','PM10']},
+  'E. DE HOSTELERIA':{nombre:'Escuela de Hostelería',municipio:'San Roque',lat:36.2080,lon:-5.3860,p:['SO2','NO2','CO']},
+  'MADREVIEJA':{nombre:'Madrevieja',municipio:'San Roque',lat:36.2300,lon:-5.3900,p:['SO2','NO2']},
+};
+/* Costa (Natural Earth 1:10m, recortada a la bahía) */
+const COSTA = [[-5.2967,36.2459],[-5.3059,36.2433],[-5.3177,36.228],[-5.3339,36.1819],[-5.3319,36.1804],[-5.3317,36.1789],[-5.3343,36.182],[-5.3359,36.1797],[-5.333,36.18],[-5.3445,36.1095],[-5.3502,36.1109],[-5.3525,36.1224],[-5.3542,36.1223],[-5.3644,36.1338],[-5.3566,36.1261],[-5.3541,36.1277],[-5.3611,36.1482],[-5.363,36.1451],[-5.3655,36.1482],[-5.366,36.1441],[-5.366,36.1485],[-5.3653,36.1493],[-5.3543,36.1467],[-5.3532,36.1504],[-5.3599,36.1515],[-5.351,36.1519],[-5.3545,36.1524],[-5.3519,36.1551],[-5.3651,36.1551],[-5.3675,36.1571],[-5.3533,36.1569],[-5.3551,36.1598],[-5.3586,36.1585],[-5.3566,36.1612],[-5.3613,36.1591],[-5.358,36.1609],[-5.3598,36.1641],[-5.3706,36.1694],[-5.3743,36.1638],[-5.3821,36.1694],[-5.3774,36.1705],[-5.3818,36.1727],[-5.3774,36.1736],[-5.3835,36.1744],[-5.3799,36.1746],[-5.3818,36.1785],[-5.3905,36.1808],[-5.415,36.1802],[-5.4162,36.1745],[-5.4199,36.1732],[-5.4167,36.1745],[-5.4195,36.1786],[-5.4181,36.1753],[-5.4257,36.1764],[-5.4301,36.1726],[-5.441,36.1764],[-5.4446,36.1762],[-5.4438,36.1696],[-5.4383,36.1707],[-5.4427,36.1703],[-5.4419,36.176],[-5.4344,36.1728],[-5.4354,36.1713],[-5.4316,36.172],[-5.4446,36.1543],[-5.4473,36.1387],[-5.4435,36.1377],[-5.4442,36.1305],[-5.4417,36.1476],[-5.4356,36.1483],[-5.4362,36.1349],[-5.4396,36.1328],[-5.4363,36.131],[-5.4435,36.1272],[-5.4317,36.1284],[-5.4302,36.1437],[-5.4282,36.1477],[-5.4301,36.1333],[-5.4228,36.1328],[-5.4223,36.1199],[-5.4369,36.1188],[-5.436,36.1228],[-5.4429,36.1184],[-5.4352,36.1187],[-5.4376,36.1124],[-5.4316,36.1081],[-5.4315,36.1052],[-5.4402,36.1028],[-5.4434,36.0895],[-5.4406,36.086],[-5.4268,36.0831],[-5.4257,36.077],[-5.4305,36.0712],[-5.4436,36.0648],[-5.4492,36.0568],[-5.4645,36.0503],[-5.486,36.0545],[-5.5167,36.0374],[-5.5388,36.0315],[-5.5422,36.03],[-5.56,36.03],[-5.56,36.27],[-5.2848,36.27],[-5.2967,36.2459]];
+const PUEBLOS = [['Algeciras',-5.462,36.128],['Los Barrios',-5.498,36.196],['San Roque',-5.378,36.214],['La Línea',-5.335,36.172],['Gibraltar',-5.338,36.132],['Bahía de Algeciras',-5.405,36.130]];
+
+const S = { cat:{}, demo:false, latest:null, fecha:null, hora:0, pol:'ICA', vista:'lista', pos:null, dias:new Map(), det:null, detPol:'PM10', detPolVista:null, evo:'h48', vb:null, comp:[], compEvo:'h48', compFirma:null, compTexto:'', miteco:{} };
+const $ = (id) => document.getElementById(id);
+
+/* ---------- utilidades ---------- */
+const norm = (s) => (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/\s+/g,' ').trim();
+const madrid = (o) => new Intl.DateTimeFormat('en-CA', { timeZone:'Europe/Madrid', ...o }).format(new Date());
+const hoyStr = () => madrid({});
+const horaMadrid = () => +madrid({ hour:'2-digit', hour12:false }) % 24;
+const sumaDias = (f,n) => { const d = new Date(f+'T12:00:00Z'); d.setUTCDate(d.getUTCDate()+n); return d.toISOString().slice(0,10); };
+const fmtFecha = (f) => { const [y,m,d] = f.split('-'); return `${d}/${m}/${y}`; };
+const fmtCorta = (f) => { const [,m,d] = f.split('-'); return `${d}/${m}`; };
+const diaSem = (f) => new Date(f+'T12:00:00Z').toLocaleDateString('es-ES', { weekday:'short', timeZone:'UTC' }).replace('.','');
+const fmtHora = (i) => String(i+1).padStart(2,'0') + ':00';
+const fmtV = (v) => v == null ? '–' : (v < 10 ? v.toFixed(1) : Math.round(v).toString()).replace('.', ',');
+const unidad = (p) => UNIDAD[p] || 'µg/m³';
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function nivel(p,v) { if (v == null || !BANDAS[p]) return -1; const b = BANDAS[p]; let i = 0; while (i < b.length && v > b[i]) i++; return i; }
+const bg = (n) => n < 0 ? 'var(--linea)' : COLOR[n];
+const fg = (n) => n < 0 ? 'var(--gris)' : COLOR_TXT[n];
+function distKm(a,b) { const r = Math.PI/180, dLa = (b[0]-a[0])*r, dLo = (b[1]-a[1])*r; const x = Math.sin(dLa/2)**2 + Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)**2; return 12742*Math.asin(Math.sqrt(x)); }
+const fmtKm = (d) => d < 10 ? d.toFixed(1).replace('.',',')+' km' : Math.round(d)+' km';
+function guardar(k,v) { try { localStorage.setItem('aireRapido.'+k, JSON.stringify(v)); } catch {} }
+function leer(k,def) { try { const v = localStorage.getItem('aireRapido.'+k); return v == null ? def : JSON.parse(v); } catch { return def; } }
+
+/* ---------- datos de demostración (solo si no hay datos reales) ---------- */
+function hash(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed) { let s = seed || 1; return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
+function demoDia(f) {
+  const hoy = hoyStr();
+  if (f > hoy || f < PRIMER_DIA) return null;
+  const ult = f === hoy ? Math.max(0, horaMadrid() - 1) : 23;
+  const r0 = rng(hash('dia'+f));
+  const levante = r0() < 0.35, polvo = r0() < 0.3;
+  const intens = 25 + r0()*45, picoP = 12 + r0()*8;
+  const dust = [], aod = [];
+  for (let i = 0; i < 24; i++) {
+    if (i > ult) { dust.push(null); aod.push(null); continue; }
+    const t = i + 1;
+    const v = polvo ? 6 + intens*Math.exp(-((t-picoP)**2)/40) : (levante ? 3 + 3*r0() : 0.5 + 2*r0());
+    dust.push(Math.round(v*10)/10); aod.push(Math.round((0.08 + v/120)*100)/100);
+  }
+  const est = {};
+  for (const [k,c] of Object.entries(CATALOGO)) {
+    const r = rng(hash(k+f));
+    const industrial = /ECONOMATO|MAYORGA|GUADARRANQUE|CARTEYA|CAMPAMENTO|CORTIJILLOS/.test(k);
+    const urbano = /ALGECIRAS|LINEA|BARRIOS/.test(k);
+    const pico = industrial && r() < 0.45 ? 6 + Math.floor(r()*12) : -1;
+    const h = {};
+    for (const p of c.p) {
+      const s = [];
+      for (let i = 0; i < 24; i++) {
+        if (i > ult) { s.push(null); continue; }
+        const t = i + 1, n = 0.85 + r()*0.3;
+        let v;
+        if (p === 'NO2') v = (urbano ? 22 : 12) + 26*Math.exp(-((t-8.5)**2)/4) + 22*Math.exp(-((t-20.5)**2)/5);
+        else if (p === 'O3') v = 38 + 52*Math.exp(-((t-15)**2)/12) + (levante ? 10 : 0);
+        else if (p === 'SO2') v = (industrial ? 6 : 3) + (pico >= 0 ? 60*Math.exp(-((i-pico)**2)/2.5) : 0);
+        else if (p === 'PM10') v = (levante ? 26 : 18) + (urbano ? 5 : 0) + 8*Math.sin(t/3) + 0.85*(dust[i] || 0);
+        else if (p === 'PM2.5') v = (levante ? 10 : 7) + 3*Math.sin(t/3) + 0.25*(dust[i] || 0);
+        else v = 0.2 + 0.25*Math.exp(-((t-9)**2)/5);
+        v *= n;
+        if (r() < 0.02) { s.push(null); continue; }
+        s.push(Math.round(v*10)/10);
+      }
+      h[p] = s;
+    }
+    est[k] = { municipio:c.municipio, h };
+  }
+  return { v:1, fecha:f, actualizado:new Date().toISOString(), demo:true, estaciones:est, polvo:dust, aod };
+}
+
+/* ---------- carga ---------- */
+async function getJSON(u) { const r = await fetch(u, { cache:'no-cache' }); if (!r.ok) throw new Error(r.status); return r.json(); }
+async function cargarDia(f, forzar=false) {
+  if (!forzar && S.dias.has(f)) return S.dias.get(f);
+  let j = null;
+  if (S.demo) j = demoDia(f);
+  else { try { j = await getJSON(`data/${f.slice(0,4)}/${f}.json`); } catch { j = null; } }
+  S.dias.set(f, j);
+  return j;
+}
+function ultimaHora(dia) { let u = -1; if (!dia) return u; for (const e of Object.values(dia.estaciones)) for (const s of Object.values(e.h)) s.forEach((v,i) => { if (v != null && i > u) u = i; }); return u; }
+function info(clave, e) {
+  const c = S.cat[norm(clave)] || {};
+  return { clave, nombre:c.nombre || clave, municipio:c.municipio || e?.municipio || '', lat:c.lat, lon:c.lon, aprox:c.aprox ?? true, geo:c.lat != null };
+}
+function lectura(e, hora, pol) {
+  if (pol === 'ICA') {
+    let n = -1, p = null, v = null;
+    for (const q of POLS_ICA) { const x = e.h[q]?.[hora]; const m = nivel(q, x); if (m > n || (m === n && m >= 0 && x/BANDAS[q][Math.min(m,4)] > v/BANDAS[p][Math.min(n,4)])) { n = m; p = q; v = x; } }
+    return { v, n, p };
+  }
+  const v = e.h[pol]?.[hora] ?? null;
+  return { v, n:nivel(pol, v), p:pol };
+}
+function filas() {
+  const dia = S.dias.get(S.fecha); if (!dia) return [];
+  return Object.entries(dia.estaciones).map(([k,e]) => {
+    const i = info(k,e), l = lectura(e, S.hora, S.pol);
+    return { ...i, e, ...l, d: S.pos && i.geo ? distKm(S.pos, [i.lat, i.lon]) : null };
+  });
+}
+function ordenar(fs) {
+  return [...fs].sort((a,b) => S.pos ? (a.d ?? 1e9) - (b.d ?? 1e9) : (b.n - a.n) || ((b.v ?? -1) - (a.v ?? -1)));
+}
+
+/* ---------- cabecera ---------- */
+function pintarDias() {
+  const hoy = hoyStr(), dias = [];
+  for (let i = 0; i < 7; i++) dias.push(sumaDias(hoy, -i));
+  if (!dias.includes(S.fecha)) dias.push(S.fecha);
+  $('dias').innerHTML = dias.map((f,i) => {
+    const et = f === hoy ? 'Hoy' : f === sumaDias(hoy,-1) ? 'Ayer' : diaSem(f);
+    return `<button class="dia" data-f="${f}" aria-pressed="${f === S.fecha}"><b>${et}</b><small>${fmtCorta(f)}${i === 7 ? '/'+f.slice(2,4) : ''}</small></button>`;
+  }).join('') + `<button class="dia cal" id="btnCal" aria-label="Elegir otra fecha">📅</button>`;
+  const a = $('dias').querySelector('[aria-pressed=true]'); if (a) a.scrollIntoView({ inline:'nearest', block:'nearest' });
+}
+function pintarPols() {
+  $('pols').innerHTML = ['ICA', ...POLS].map((p) => `<button class="chip" data-p="${p}" aria-pressed="${p === S.pol}">${p === 'ICA' ? 'Índice global' : p}</button>`).join('');
+}
+function pintarHora() {
+  $('hora').value = S.hora; $('horaTxt').textContent = fmtHora(S.hora);
+  const u = ultimaHora(S.dias.get(S.fecha));
+  $('btnUltima').disabled = u < 0 || u === S.hora;
+}
+function pintarEstado() {
+  const dia = S.dias.get(S.fecha);
+  if (!dia) { $('estado').textContent = `Sin datos del ${fmtFecha(S.fecha)}`; return; }
+  const act = dia.actualizado && !S.demo ? ', actualizado ' + new Date(dia.actualizado).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' }) : '';
+  $('estado').textContent = `${S.fecha === hoyStr() ? 'Hoy' : fmtFecha(S.fecha)} a las ${fmtHora(S.hora)}${act}`;
+}
+function pintarAvisoDemo() {
+  $('avisoDemo').innerHTML = S.demo ? `<div class="demo"><b>Vista previa con datos simulados.</b> Los reales llegarán al activar la descarga en GitHub.</div>` : '';
+}
+
+async function irA(f, { ultima=true, forzar=false } = {}) {
+  S.fecha = f; $('estado').textContent = 'Cargando…';
+  const dia = await cargarDia(f, forzar);
+  if (ultima) { const u = ultimaHora(dia); S.hora = u >= 0 ? u : 23; }
+  pintarDias(); pintarHora(); pintar();
+  if (S.det) pintarDetalle();
+}
+
+/* ---------- lista ---------- */
+function htmlTiles(e, hora) {
+  return POLS.filter((p) => e.h[p]).map((p) => { const v = e.h[p][hora]; const n = nivel(p, v);
+    return `<div class="tile" style="background:${v == null ? 'var(--fondo)' : bg(n)};color:${v == null ? 'var(--gris)' : fg(n)}"><span>${p}</span><b>${fmtV(v)}</b></div>`; }).join('');
+}
+function pintarLista() {
+  const dia = S.dias.get(S.fecha);
+  if (!dia) {
+    $('vLista').innerHTML = `<div class="vacio"><strong>Todavía no hay datos del ${fmtFecha(S.fecha)}.</strong>La Junta publica a lo largo del día. Prueba con ayer o vuelve en un rato.</div>`;
+    return;
+  }
+  const fs = ordenar(filas());
+  if (!fs.length) { $('vLista').innerHTML = '<div class="vacio"><strong>Sin estaciones en este día.</strong></div>'; return; }
+  const h = fs.find((f) => f.v != null) || fs[0];
+  const lh = lectura(h.e, S.hora, 'ICA');
+  const quien = S.pos ? `La más cercana, a ${fmtKm(h.d)}` : (S.pol === 'ICA' ? 'La que peor está ahora' : `Valor más alto de ${S.pol}`);
+  const bigV = S.pol === 'ICA' ? lh.v : h.v, bigN = S.pol === 'ICA' ? lh.n : h.n, bigP = S.pol === 'ICA' ? lh.p : S.pol;
+  const mp = maxPolvo(dia.polvo), npv = mp ? nivPolvo(mp.v) : -1;
+  let out = npv >= 1 ? `<button class="polvo-aviso" id="avisoPolvo"><i style="background:${POLVO_COL[npv]};box-shadow:0 0 0 2px #fff"></i><span><b>Posible polvo africano: ${POLVO_NOM[npv].toLowerCase()}.</b> Máximo estimado ${fmtV(mp.v)} µg/m³ a las ${fmtHora(mp.i)} (modelo CAMS). Toca para saber más.</span></button>` : '';
+  out += htmlOficial(S.fecha, true);
+  out += `<button class="hero" data-k="${esc(h.clave)}">
+    <div class="hero-top" style="background:${bg(bigN)};color:${fg(bigN)}">
+      <span class="quien">${esc(quien)}</span>
+      <h2>${esc(h.nombre)}</h2>
+      <span class="big">${fmtV(bigV)}<small>${bigP ? esc(bigP)+' '+unidad(bigP) : ''}</small></span>
+      <span class="lvl">${bigN >= 0 ? NIVELES[bigN] : 'Sin dato a esta hora'}</span>
+    </div>
+    <div class="tiles">${htmlTiles(h.e, S.hora)}</div>
+  </button>`;
+  out += `<div class="seccion"><h3>${fs.length} estaciones, ${S.pos ? 'por distancia' : 'de peor a mejor'}</h3>${S.pos ? '<button id="quitarPos">Ordenar por nivel</button>' : ''}</div>`;
+  out += fs.map((f) => {
+    const txtN = f.n >= 0 ? NIVELES[f.n] : 'Sin dato';
+    const extra = '', por = S.pol === 'ICA' && f.p && f.n >= 0 ? `, por ${f.p}` : '';
+    return `<button class="est" data-k="${esc(f.clave)}">
+      <span class="banda" style="background:${bg(f.n)}"></span>
+      <span><span class="nom">${esc(f.nombre)}</span><span class="meta">${esc(f.municipio)}${f.d != null ? ', '+fmtKm(f.d) : ''}${por}</span></span>
+      <span class="der"><b>${fmtV(f.v)}</b><br><span class="pill" style="background:${bg(f.n)};color:${fg(f.n)}">${txtN}${extra}</span></span>
+    </button>`;
+  }).join('');
+  $('vLista').innerHTML = out;
+}
+
+/* ---------- mapa (SVG propio, sin servicios externos) ---------- */
+const MX0 = -5.56, MX1 = -5.26, MY0 = 36.03, MY1 = 36.27, KX = Math.cos(36.15*Math.PI/180);
+const MW = 1000, MH = Math.round(MW*(MY1-MY0)/((MX1-MX0)*KX));
+const px = (lon) => (lon-MX0)/(MX1-MX0)*MW;
+const py = (lat) => (MY1-lat)/(MY1-MY0)*MH;
+const VISTA_INICIAL = () => { const x0 = px(-5.515), x1 = px(-5.320), y0 = py(36.245), y1 = py(36.100); return { x:x0, y:y0, w:x1-x0, h:y1-y0 }; };
+function ajustarAspecto(vb) {
+  const el = $('mapaWrap'); const W = el.clientWidth || 360, H = el.clientHeight || 500;
+  const a = W / H; const cx = vb.x + vb.w/2, cy = vb.y + vb.h/2;
+  let w = vb.w, h = vb.h;
+  if (w/h > a) h = w / a; else w = h * a;
+  return { x:cx-w/2, y:cy-h/2, w, h };
+}
+function altoMapa() {
+  const w = $('mapaWrap'); const top = w.getBoundingClientRect().top + window.scrollY;
+  const nav = document.querySelector('.nav').offsetHeight;
+  document.documentElement.style.setProperty('--alto-mapa', Math.max(320, window.innerHeight - top - nav - 14) + 'px');
+}
+function pintarMapa() {
+  const svg = $('mapa');
+  if (!S.vb) S.vb = ajustarAspecto(VISTA_INICIAL());
+  const vb = S.vb, esc2 = vb.w / ($('mapaWrap').clientWidth || 360);
+  svg.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+  const costa = 'M' + COSTA.map(([lo,la]) => `${px(lo).toFixed(1)},${py(la).toFixed(1)}`).join('L') + 'Z';
+  let s = `<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--agua)"/><rect x="-3000" y="-3000" width="7000" height="3001" fill="var(--tierra)"/><rect x="-3000" y="-1" width="3001" height="${MH+1}" fill="var(--tierra)"/>`;
+  const nombres = vb.w < 400;
+  const linea = 'M' + COSTA.slice(0,-1).filter(([lo,la]) => lo > -5.555 && la < 36.269 && la > 36.031).map(([lo,la]) => `${px(lo).toFixed(1)},${py(la).toFixed(1)}`).join('L');
+  s += `<path d="${costa}" fill="var(--tierra)"/><path d="${linea}" fill="none" stroke="var(--costa)" stroke-width="${1.4*esc2}" stroke-linejoin="round"/>`;
+  for (const [n,lo,la] of PUEBLOS) s += `<text class="lbl-mapa" x="${px(lo)}" y="${py(la)}" text-anchor="middle" font-size="${12*esc2}" ${n.startsWith('Bahía') ? 'font-style="italic"' : ''}>${n}</text>`;
+  const fs = filas().filter((f) => f.geo).sort((a,b) => a.n - b.n);
+  for (const f of fs) {
+    const x = px(f.lon), y = py(f.lat), t = fmtV(f.v), w = (Math.max(2, t.length)*8 + 14);
+    s += `<g class="pin" data-k="${esc(f.clave)}" transform="translate(${x} ${y}) scale(${esc2})" style="cursor:pointer">
+      <path d="M0 0 L-6 -12 H6 Z" fill="${f.n < 0 ? '#9AAAB0' : COLOR[f.n]}"/>
+      <rect x="${-w/2}" y="-38" width="${w}" height="26" rx="13" fill="${f.n < 0 ? '#9AAAB0' : COLOR[f.n]}" stroke="#fff" stroke-width="2"/>
+      <text class="pin-txt" x="0" y="-20.5" text-anchor="middle" fill="${f.n < 0 ? '#fff' : COLOR_TXT[f.n]}">${t}</text>
+      ${nombres ? '' : '<!--'}<text x="0" y="12" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--tinta)" stroke="var(--tierra)" stroke-width="3" paint-order="stroke">${esc(f.nombre)}</text>${nombres ? '' : '-->'}
+    </g>`;
+  }
+  if (S.pos) s += `<circle cx="${px(S.pos[1])}" cy="${py(S.pos[0])}" r="${7*esc2}" fill="#2B7FFF" stroke="#fff" stroke-width="${3*esc2}"/>`;
+  svg.innerHTML = s;
+  $('leyendaMapa').innerHTML = NIVELES.slice(0,4).map((n,i) => `<span style="background:${COLOR[i]};color:${COLOR_TXT[i]}">${n}</span>`).join('');
+}
+function zoom(f, cx, cy) {
+  const vb = S.vb; cx ??= vb.x + vb.w/2; cy ??= vb.y + vb.h/2;
+  const w = Math.min(MW*1.2, Math.max(60, vb.w*f)), k = w / vb.w, h = vb.h*k;
+  S.vb = { x:cx-(cx-vb.x)*k, y:cy-(cy-vb.y)*k, w, h }; pintarMapa();
+}
+function eventosMapa() {
+  const svg = $('mapa'), ptrs = new Map(); let movido = 0, ini = null;
+  const aSvg = (e) => { const r = svg.getBoundingClientRect(); return [S.vb.x + (e.clientX-r.left)/r.width*S.vb.w, S.vb.y + (e.clientY-r.top)/r.height*S.vb.h]; };
+  svg.addEventListener('pointerdown', (e) => { svg.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); movido = 0; ini = { vb:{...S.vb}, ptrs:new Map(ptrs) }; });
+  svg.addEventListener('pointermove', (e) => {
+    if (!ptrs.has(e.pointerId)) return;
+    ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+    const r = svg.getBoundingClientRect(), sx = S.vb.w / r.width;
+    if (ptrs.size === 1 && ini.ptrs.size === 1) {
+      const [a] = ini.ptrs.values(), [b] = ptrs.values();
+      const dx = b[0]-a[0], dy = b[1]-a[1]; movido = Math.max(movido, Math.hypot(dx,dy));
+      S.vb = { ...ini.vb, x: ini.vb.x - dx*sx, y: ini.vb.y - dy*sx }; pintarMapa();
+    } else if (ptrs.size === 2) {
+      const [a1,a2] = [...ini.ptrs.values()], [b1,b2] = [...ptrs.values()];
+      if (!a2) return;
+      const d0 = Math.hypot(a1[0]-a2[0], a1[1]-a2[1]), d1 = Math.hypot(b1[0]-b2[0], b1[1]-b2[1]);
+      movido = 99;
+      const cxs = (a1[0]+a2[0])/2 - r.left, cys = (a1[1]+a2[1])/2 - r.top;
+      const cx = ini.vb.x + cxs/r.width*ini.vb.w, cy = ini.vb.y + cys/r.height*ini.vb.h;
+      const k = Math.min(3, Math.max(.2, d0/d1));
+      S.vb = { x:cx-(cx-ini.vb.x)*k, y:cy-(cy-ini.vb.y)*k, w:ini.vb.w*k, h:ini.vb.h*k }; pintarMapa();
+    }
+  });
+  const fin = (e) => {
+    const eraToque = ptrs.size === 1 && movido < 6;
+    ptrs.delete(e.pointerId);
+    ini = { vb:{...S.vb}, ptrs:new Map(ptrs) };
+    if (eraToque && e.type === 'pointerup') {
+      const el = document.elementFromPoint(e.clientX, e.clientY)?.closest('.pin');
+      if (el) abrirDetalle(el.dataset.k);
+    }
+  };
+  svg.addEventListener('pointerup', fin); svg.addEventListener('pointercancel', fin);
+  svg.addEventListener('wheel', (e) => { e.preventDefault(); const [x,y] = aSvg(e); zoom(e.deltaY > 0 ? 1.2 : 1/1.2, x, y); }, { passive:false });
+  $('zMas').onclick = () => zoom(1/1.4); $('zMenos').onclick = () => zoom(1.4);
+  $('zYo').onclick = () => { if (!S.pos) return pedirPos(); const w = S.vb.w, h = S.vb.h; S.vb = { x:px(S.pos[1])-w/2, y:py(S.pos[0])-h/2, w, h }; pintarMapa(); };
+  new ResizeObserver(() => { if (S.vista === 'mapa' && S.vb) { S.vb = ajustarAspecto(S.vb); pintarMapa(); } }).observe($('mapaWrap'));
+  window.addEventListener('resize', () => { if (S.vista === 'mapa') altoMapa(); });
+}
+
+function pintar() { pintarEstado(); pintarHora(); if (S.vista === 'lista') pintarLista(); else if (S.vista === 'comp') pintarComp(); else pintarMapa(); }
+
+/* ---------- gráfica con el valor en cada punto ---------- */
+function grafica(puntos, pol, titulo, polvo) {
+  const W = Math.round(Math.max(330, Math.min(720, window.innerWidth - 56))), H = W < 500 ? 230 : 270, m = { t:30, r:10, b:28, l:10 };
+  const vals = puntos.map((p) => p.v).filter((v) => v != null);
+  if (!vals.length) return '<p class="small">Sin datos para representar.</p>';
+  const maxV = Math.max(...vals)*1.2 || 1;
+  const x = (i) => m.l + (puntos.length === 1 ? (W-m.l-m.r)/2 : i*(W-m.l-m.r)/(puntos.length-1));
+  const y = (v) => H - m.b - (v/maxV)*(H-m.t-m.b);
+  let s = `<svg class="graf" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(titulo)}">`;
+  for (const [i,u] of (BANDAS[pol] || []).entries()) { if (u > maxV) break;
+    s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(u)}" y2="${y(u)}" stroke="${COLOR[i+1]}" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${W-m.r}" y="${y(u)-3}" text-anchor="end" font-size="10" fill="var(--gris)">${u}</text>`; }
+  if (polvo) { const pw = puntos.length > 1 ? (W-m.l-m.r)/(puntos.length-1) : 20;
+    polvo.forEach((v,i) => { const n = nivPolvo(v); if (n >= 1) s += `<rect x="${x(i)-pw/2}" y="${m.t-6}" width="${pw}" height="${H-m.b-m.t+6}" fill="${POLVO_COL[n]}" opacity=".55"/>`; }); }
+  s += `<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" stroke="var(--linea)"/>`;
+  let d = '', ab = false, area = '', ini = null;
+  puntos.forEach((p,i) => { if (p.v == null) { if (ab) area += `L${x(i-1)},${H-m.b}Z`; ab = false; return; }
+    if (!ab) { ini = i; area += `M${x(i)},${H-m.b}L${x(i)},${y(p.v)}`; } else area += `L${x(i)},${y(p.v)}`;
+    d += `${ab ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`; ab = true; });
+  if (ab) area += `L${x(puntos.length-1)},${H-m.b}Z`;
+  s += `<path d="${area}" fill="var(--mar)" opacity=".10"/><path d="${d}" fill="none" stroke="var(--mar)" stroke-width="2.4" stroke-linejoin="round"/>`;
+  const denso = puntos.length > (W < 500 ? 10 : 16), paso = Math.ceil(puntos.length / (W < 500 ? 8 : 12));
+  puntos.forEach((p,i) => {
+    if (i % paso === 0 || i === puntos.length-1) s += `<text x="${x(i)}" y="${H-m.b+16}" text-anchor="middle" font-size="11" fill="var(--gris)">${esc(p.et)}</text>`;
+    if (p.v == null) return;
+    const n = nivel(pol, p.v);
+    s += `<circle cx="${x(i)}" cy="${y(p.v)}" r="4" fill="${n < 0 ? 'var(--papel)' : COLOR[n]}" stroke="var(--tinta)" stroke-width="1"/>`;
+    s += `<text x="${x(i)}" y="${y(p.v) - 8 - (denso && i % 2 ? 11 : 0)}" text-anchor="middle" font-size="${denso ? 10 : 12}" font-weight="700" fill="var(--tinta)" style="font-family:var(--num)">${fmtV(p.v)}</text>`;
+  });
+  return s + `<text x="${m.l}" y="12" font-size="11" fill="var(--gris)">${esc(unidad(pol))}</text></svg>`;
+}
+
+/* ---------- detalle ---------- */
+function abrirDetalle(k) {
+  S.det = k; S.evo = leer('evo', 'h48');
+  if (!EVO.some((o) => o.id === S.evo)) S.evo = 'h48';
+  S.detPol = leer('detPol', 'PM10');
+  pintarDetalle();
+  if (!$('detalle').open) $('detalle').showModal();
+  $('detalle').scrollTop = 0;
+}
+function pintarDetalle() {
+  const e = S.dias.get(S.fecha)?.estaciones[S.det], i = info(S.det, e);
+  const l = e ? lectura(e, S.hora, 'ICA') : { n:-1 };
+  $('detCab').style.background = bg(l.n); $('detCab').style.color = fg(l.n);
+  $('detNombre').textContent = i.nombre;
+  $('detSub').textContent = `${i.municipio}${S.pos && i.geo ? ', a '+fmtKm(distKm(S.pos,[i.lat,i.lon])) : ''}. ${l.n >= 0 ? NIVELES[l.n]+' a las '+fmtHora(S.hora) : 'Sin dato a las '+fmtHora(S.hora)}, ${fmtFecha(S.fecha)}`;
+
+  let h = `<div class="fila-bot">
+    <button class="boton" data-dia="-1">‹ Día anterior</button>
+    <button class="boton" data-dia="1" ${S.fecha >= hoyStr() ? 'disabled' : ''}>Día siguiente ›</button>
+    ${i.geo ? `<a class="boton pri" style="text-decoration:none" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=${i.lat},${i.lon}">Cómo llegar</a>` : ''}
+  </div>`;
+  if (i.geo && i.aprox) h += '<p class="aviso">Ubicación aproximada de la cabina, pendiente de verificar.</p>';
+  if (!e) { $('detCuerpo').innerHTML = h + '<div class="vacio"><strong>Esta estación no tiene datos este día.</strong></div>'; return; }
+
+  const disp = POLS.filter((p) => e.h[p]);
+  const polDet = disp.includes(S.detPol) ? S.detPol : (disp.includes('PM10') ? 'PM10' : disp[0]);
+  S.detPolVista = polDet;
+  const serie = e.h[polDet], val = serie.map((v,j) => ({v,j})).filter((o) => o.v != null);
+  const media = val.length ? val.reduce((a,o) => a+o.v, 0)/val.length : null;
+  const max = val.reduce((a,o) => !a || o.v > a.v ? o : a, null);
+
+  h += `<div class="bloque"><h3>Ahora mismo a las ${fmtHora(S.hora)}</h3><div class="tiles" style="padding:0">${htmlTiles(e, S.hora)}</div></div>`;
+  h += `<div class="bloque">
+    <div class="pols" style="margin:0 0 12px;padding:0">${disp.map((p) => `<button class="chip" data-dp="${p}" aria-pressed="${p === polDet}">${p}</button>`).join('')}</div>
+    <h3>${polDet} hora a hora</h3>
+    <div class="resumen">
+      <div><b>${fmtV(serie[S.hora])}</b>a las ${fmtHora(S.hora)}</div>
+      <div><b>${fmtV(media)}</b>media del día</div>
+      <div><b>${max ? fmtV(max.v) : '–'}</b>máximo${max ? ', '+fmtHora(max.j) : ''}</div>
+      <div><b>${val.length}/24</b>horas con dato</div>
+    </div>
+    ${grafica(serie.map((v,j) => ({ v, et:String(j+1).padStart(2,'0') })), polDet, `${polDet} el ${fmtFecha(S.fecha)}`, S.dias.get(S.fecha)?.polvo)}
+    ${textoPolvoDia(S.dias.get(S.fecha))}
+  </div>`;
+  if (informeOficial(S.fecha)) h += htmlOficial(S.fecha, false);
+
+  h += `<div class="bloque"><h3>Evolución de ${polDet}</h3>
+    <div class="evo-sel">${EVO.map((o) => `<button class="chip" data-evo="${o.id}" aria-pressed="${S.evo === o.id}">${o.et}</button>`).join('')}</div>
+    <div id="evo" style="margin-top:10px"></div></div>`;
+  const st = (p) => { const vs = e.h[p].filter((v) => v != null); return vs.length ? { m:vs.reduce((a,b) => a+b,0)/vs.length, x:Math.max(...vs) } : { m:null, x:null }; };
+  h += `<div class="bloque"><h3>Tabla del día, en µg/m³${disp.includes('CO') ? ' (CO en mg/m³)' : ''}</h3><div class="tabla"><table>
+    <thead><tr><th>Hora</th>${disp.map((p) => `<th>${p}</th>`).join('')}</tr></thead><tbody>`;
+  for (let j = 0; j < 24; j++) h += `<tr class="${j === S.hora ? 'sel' : ''}"><td>${fmtHora(j)}</td>${disp.map((p) => { const v = e.h[p][j], n = nivel(p,v);
+      return `<td class="c"><span style="background:${v == null ? 'transparent' : bg(n)};color:${v == null ? 'var(--gris)' : fg(n)}">${fmtV(v)}</span></td>`; }).join('')}</tr>`;
+  h += `</tbody><tfoot><tr><td>Media</td>${disp.map((p) => `<td>${fmtV(st(p).m)}</td>`).join('')}</tr><tr><td>Máximo</td>${disp.map((p) => `<td>${fmtV(st(p).x)}</td>`).join('')}</tr></tfoot></table></div>
+    <div class="fila-bot" style="margin-top:12px"><button class="boton" id="csv">Descargar CSV</button><button class="boton" id="copiar">Copiar para Excel</button></div></div>`;
+
+  $('detCuerpo').innerHTML = h;
+  pintarEvo(S.evo);
+}
+const EVO = [
+  { id:'h24', et:'24 h', horas:24 }, { id:'h48', et:'48 h', horas:48 }, { id:'h72', et:'3 días', horas:72 },
+  { id:'h168', et:'7 días', horas:168 }, { id:'d30', et:'30 días (medias)', dias:30 }, { id:'d90', et:'90 días (medias)', dias:90 },
+];
+/* ---------- informes oficiales del Ministerio (MITECO / CSIC) ---------- */
+const MITECO_FN = 'https://www.miteco.gob.es/es/calidad-y-evaluacion-ambiental/temas/atmosfera-y-calidad-del-aire/evaluacion-y-datos-de-calidad-del-aire/fuentes-naturales/';
+const MITECO_ANUALES = MITECO_FN + 'anuales.html';
+const MITECO_INFORME_2024 = 'https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/sgalsi/atm%c3%b3sfera-y-calidad-del-aire/informes/Episodios%20Naturales%202024.pdf';
+const MITECO_METODO = 'https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/temas/atmosfera-y-calidad-del-aire/metodologiaparaepisodiosnaturales-revabril2013_tcm30-186522.pdf';
+const MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+/* Semilla con los informes reales de agosto y septiembre de 2026; la Action mantiene data/miteco_intrusiones.json */
+const MITECO_SEED_BASE = 'https://www.miteco.gob.es/content/dam/miteco/es/calidad-y-evaluacion-ambiental/sgalsi/atm%c3%b3sfera-y-calidad-del-aire/sgalsi_intrusiones/sgpc_intrusiones-2026/';
+const MITECO_SEED = {"2026-08-01":["Prediccion_202608010203.pdf","los días 1, 2 y 3 de agosto"],"2026-08-02":["Prediccion_202608010203.pdf","los días 1, 2 y 3 de agosto"],"2026-08-03":["Prediccion_202608010203.pdf","los días 1, 2 y 3 de agosto"],"2026-08-04":["Prediccion_20260804.pdf","el día 4 de agosto"],"2026-08-05":["Prediccion_20260805.pdf","el día 5 de agosto"],"2026-08-06":["Prediccion_20260806.pdf","el día 6 de agosto"],"2026-08-08":["Prediccion_202608080910.pdf","los días 8, 9 y 10 de agosto"],"2026-08-09":["Prediccion_202608080910.pdf","los días 8, 9 y 10 de agosto"],"2026-08-10":["Prediccion_202608080910.pdf","los días 8, 9 y 10 de agosto"],"2026-08-11":["Prediccion_20260811.pdf","el día 11 de agosto"],"2026-08-12":["Prediccion_20260812.pdf","el día 12 de agosto"],"2026-08-13":["Prediccion_20260813.pdf","el día 13 de agosto"],"2026-08-14":["Prediccion_20260814.pdf","el día 14 de agosto"],"2026-08-15":["Prediccion_202608151617.pdf","los días 15, 16 y 17 de agosto"],"2026-08-16":["Prediccion_202608151617.pdf","los días 15, 16 y 17 de agosto"],"2026-08-17":["Prediccion_202608151617.pdf","los días 15, 16 y 17 de agosto"],"2026-08-18":["Prediccion_20260818.pdf","el día 18 de agosto"],"2026-08-19":["Prediccion_20260819.pdf","el día 19 de agosto"],"2026-08-20":["Prediccion_20260820.pdf","el día 20 de agosto"],"2026-08-21":["Prediccion_20260821.pdf","el día 21 de agosto"],"2026-08-25":["Prediccion_20260825.pdf","el día 25 de agosto"],"2026-08-26":["Prediccion_20260826.pdf","el día 26 de agosto"],"2026-08-27":["Prediccion_20260827.pdf","el día 27 de agosto"],"2026-08-28":["Prediccion_20260828.pdf","el día 28 de agosto"],"2026-08-29":["Prediccion_20260829_30_31.pdf","los días 29, 30 y 31 de agosto"],"2026-08-30":["Prediccion_20260829_30_31.pdf","los días 29, 30 y 31 de agosto"],"2026-08-31":["Prediccion_20260829_30_31.pdf","los días 29, 30 y 31 de agosto"],"2026-09-01":["Prediccion_20260901.pdf","el día 1 de septiembre"],"2026-09-02":["Prediccion_20260902.pdf","el día 2 de septiembre"],"2026-09-03":["Prediccion_20260903.pdf","el día 3 de septiembre"],"2026-09-04":["Prediccion_20260904.pdf","el día 4 de septiembre"],"2026-09-05":["Prediccion_202609050607.pdf","los días 5, 6 y 7 de septiembre"],"2026-09-06":["Prediccion_202609050607.pdf","los días 5, 6 y 7 de septiembre"],"2026-09-07":["Prediccion_202609050607.pdf","los días 5, 6 y 7 de septiembre"],"2026-09-08":["Prediccion_20260908.pdf","el día 8 de septiembre"],"2026-09-09":["Prediccion_20260909.pdf","el día 9 de septiembre"],"2026-09-10":["Prediccion_20260910.pdf","el día 10 de septiembre"],"2026-09-15":["Prediccion_20260915.pdf","el día 15 de septiembre"],"2026-09-16":["Prediccion_20260916.pdf","el día 16 de septiembre"],"2026-09-17":["Prediccion_20260917.pdf","el día 17 de septiembre"],"2026-09-19":["Prediccion_202609192021.pdf","los días 19, 20 y 21 de septiembre"],"2026-09-20":["Prediccion_202609192021.pdf","los días 19, 20 y 21 de septiembre"],"2026-09-21":["Prediccion_202609192021.pdf","los días 19, 20 y 21 de septiembre"],"2026-09-22":["Prediccion_20260922.pdf","el día 22 de septiembre"],"2026-09-23":["Prediccion_20260923.pdf","el día 23 de septiembre"]};
+function paginaMiteco(f) {
+  const y = +f.slice(0,4), m = +f.slice(5,7);
+  if (y > 2023 || (y === 2023 && m >= 9)) return MITECO_FN + `episodios-${MESES_ES[m-1]}-${y}.html`;
+  if (y === 2023 && m === 8) return MITECO_FN + 'episodios_agosto_2023.html';
+  return MITECO_FN + `prediccion_episodios_${y}.html`;
+}
+const informeOficial = (f) => S.miteco[f] || null;
+const mesTexto = (f) => `${MESES_ES[+f.slice(5,7)-1]} de ${f.slice(0,4)}`;
+function htmlOficial(f, compacto) {
+  const inf = informeOficial(f);
+  if (!inf) return '';
+  return `<div class="oficial"><span class="ico">PDF</span><p><b>Informe oficial del Ministerio:</b> hay predicción de intrusión de aire africano para el ${fmtFecha(f)} (${esc(inf.titulo.replace('Predicción para ',''))}). <a href="${esc(inf.pdf)}" target="_blank" rel="noopener">Abrir informe PDF</a>${compacto ? '' : '<br><small style="color:var(--gris)">El informe cubre toda España: revisa en el PDF si menciona el sur o el suroeste peninsular.</small>'}</p></div>`;
+}
+const iconoOficial = (f) => informeOficial(f) ? `<a class="doc" href="${esc(informeOficial(f).pdf)}" target="_blank" rel="noopener" title="Informe oficial del Ministerio (PDF)" aria-label="Informe oficial del Ministerio del ${fmtFecha(f)}">📄</a>` : '';
+
+/* ---------- polvo africano (modelo CAMS vía Open-Meteo) ---------- */
+const POLVO_NOM = ['Sin aporte relevante','Leve','Moderado','Intenso'];
+const POLVO_COL = ['transparent','#EBD8AE','#D9B06C','#B47C38'];
+const POLVO_TXT = ['var(--gris)','#4A3510','#3A2708','#FFFFFF'];
+const nivPolvo = (v) => v == null ? -1 : v < 10 ? 0 : v < 25 ? 1 : v < 50 ? 2 : 3;
+function maxPolvo(arr) { let m = null; (arr || []).forEach((v,i) => { if (v != null && (!m || v > m.v)) m = { v, i }; }); return m; }
+function textoPolvoDia(dia) {
+  const m = maxPolvo(dia?.polvo); if (!m) return '';
+  const n = nivPolvo(m.v);
+  return `<p class="nota">${n >= 1 ? '<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+POLVO_COL[n]+';vertical-align:-1px"></span> ' : ''}Polvo africano estimado en la bahía: ${POLVO_NOM[n].toLowerCase()}, máximo ${fmtV(m.v)} µg/m³ a las ${fmtHora(m.i)}${n >= 1 ? '. Las franjas marcan esas horas.' : '.'}</p>`;
+}
+
+/* Ventana de N horas que termina en (fecha, hora) */
+async function ventana(finF, finH, horas) {
+  const nd = Math.ceil((horas - (finH+1)) / 24) + 1;
+  const fechas = Array.from({ length:nd }, (_,i) => sumaDias(finF, i-nd+1)).filter((f) => f >= PRIMER_DIA);
+  const dias = await Promise.all(fechas.map((f) => cargarDia(f)));
+  const eje = [];
+  fechas.forEach((f,di) => { for (let j = 0; j < 24; j++) eje.push({ f, i:j, di }); });
+  const fin = eje.findIndex((p) => p.f === finF && p.i === finH);
+  return { fechas, dias, eje: eje.slice(Math.max(0, fin - horas + 1), fin + 1) };
+}
+
+/* Gráfica horaria continua y desplazable, con el valor en cada punto.
+   series: [{ nombre, color, vals }] alineadas con eje; polvo: valores CAMS alineados o null */
+function graficaSeries(eje, series, pol, polvo) {
+  const multi = series.length > 1, paso = multi ? 40 : 32;
+  const hayPolvo = polvo && polvo.some((v) => v != null);
+  const H = multi ? 290 : 260, m = { t:44, r:28, b:30, l:22 }, HP = hayPolvo ? 92 : 0;
+  const W = m.l + m.r + Math.max(1, eje.length-1)*paso;
+  const vals = series.flatMap((s) => s.vals).filter((v) => v != null);
+  if (!vals.length) return '<p class="small">Sin datos en este periodo.</p>';
+  const maxV = Math.max(...vals)*1.18 || 1;
+  const x = (i) => m.l + i*paso, y = (v) => H - m.b - (v/maxV)*(H-m.t-m.b);
+  let s = `<svg viewBox="0 0 ${W} ${H+HP}" width="${W}" height="${H+HP}" role="img" aria-label="Evolución horaria de ${esc(pol)}">`;
+  if (hayPolvo) polvo.forEach((v,i) => { const n = nivPolvo(v); if (n >= 1) s += `<rect x="${x(i)-paso/2}" y="${m.t-8}" width="${paso}" height="${H-m.b-m.t+8}" fill="${POLVO_COL[n]}" opacity=".5"/>`; });
+  const umbrales = (BANDAS[pol] || []).map((u,i) => ({ u, i })).filter((o) => o.u <= maxV);
+  for (const { u, i } of umbrales) s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(u)}" y2="${y(u)}" stroke="${COLOR[i+1]}" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${W-m.r+3}" y="${y(u)+3.5}" font-size="9.5" fill="var(--gris)">${u}</text>`;
+  s += `<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" stroke="var(--linea)"/>`;
+  eje.forEach((p,i) => {
+    if (p.i !== 0 && i !== 0) return;
+    s += `<line x1="${x(i)-paso/2}" x2="${x(i)-paso/2}" y1="${m.t-30}" y2="${H+HP-6}" stroke="var(--linea)" stroke-width="1.2"/>`;
+    s += `<text x="${x(i)-paso/2+6}" y="${m.t-18}" font-size="12" font-weight="700" fill="var(--tinta)" style="font-family:var(--num)">${diaSem(p.f)} ${fmtCorta(p.f)}</text>`;
+    for (const { u } of umbrales) s += `<text x="${x(i)-paso/2+4}" y="${y(u)-3}" font-size="9.5" fill="var(--gris)">${u}</text>`;
+  });
+  for (const se of series) {
+    let d = '', area = '', ab = false;
+    se.vals.forEach((v,i) => {
+      if (v == null) { if (ab) area += `L${x(i-1)},${H-m.b}Z`; ab = false; return; }
+      area += ab ? `L${x(i)},${y(v)}` : `M${x(i)},${H-m.b}L${x(i)},${y(v)}`;
+      d += `${ab ? 'L' : 'M'}${x(i)},${y(v).toFixed(1)}`; ab = true;
+    });
+    if (ab) area += `L${x(se.vals.length-1)},${H-m.b}Z`;
+    if (!multi) s += `<path d="${area}" fill="var(--mar)" opacity=".10"/>`;
+    s += `<path d="${d}" fill="none" stroke="${se.color || 'var(--mar)'}" stroke-width="${multi ? 2 : 2.4}" stroke-linejoin="round"/>`;
+  }
+  eje.forEach((p,i) => {
+    s += `<text x="${x(i)}" y="${H-m.b+16}" text-anchor="middle" font-size="10.5" fill="var(--gris)">${String(p.i+1).padStart(2,'0')}</text>`;
+    const aqui = series.map((se) => ({ se, v:se.vals[i] })).filter((o) => o.v != null).sort((a,b) => b.v - a.v);
+    aqui.forEach((o, k) => {
+      const cy = y(o.v), n = nivel(pol, o.v);
+      s += `<circle cx="${x(i)}" cy="${cy}" r="${multi ? 3.5 : 4}" fill="${multi ? o.se.color : (n < 0 ? 'var(--papel)' : COLOR[n])}" stroke="${multi ? 'var(--papel)' : 'var(--tinta)'}" stroke-width="1"/>`;
+      let ty = cy - 8;
+      if (multi && k > 0) { const prev = y(aqui[k-1].v); ty = Math.max(ty, prev - 8 + 12*k); if (ty > H - m.b - 2) ty = cy + 14; }
+      s += `<text x="${x(i)}" y="${ty}" text-anchor="middle" font-size="${multi ? 10.5 : 11}" font-weight="700" fill="${multi ? o.se.color : 'var(--tinta)'}" stroke="var(--papel)" stroke-width="3" paint-order="stroke" style="font-family:var(--num)">${fmtV(o.v)}</text>`;
+    });
+  });
+  if (hayPolvo) {
+    const base = H + HP - 14, altoMax = HP - 34, pm = Math.max(50, ...polvo.filter((v) => v != null));
+    s += `<text x="${m.l}" y="${H+10}" font-size="11" font-weight="600" fill="#8A6424">Polvo africano estimado (CAMS), µg/m³</text>`;
+    s += `<line x1="${m.l}" x2="${W-m.r}" y1="${base}" y2="${base}" stroke="var(--linea)"/>`;
+    polvo.forEach((v,i) => {
+      if (v == null) return;
+      const hh = Math.max(1.5, v/pm*altoMax), n = nivPolvo(v);
+      s += `<rect x="${x(i)-paso*0.32}" y="${base-hh}" width="${paso*0.64}" height="${hh}" rx="2" fill="${n >= 1 ? POLVO_COL[n] : '#E4D9C4'}"/>`;
+      s += `<text x="${x(i)}" y="${base-hh-3}" text-anchor="middle" font-size="9.5" font-weight="600" fill="#6B4E1C">${fmtV(v)}</text>`;
+    });
+  }
+  return `<div class="graf-scroll">${s}</svg></div>`;
+}
+async function pintarEvo(modo) {
+  const opt = EVO.find((o) => o.id === modo) || EVO[1];
+  S.evo = opt.id; guardar('evo', opt.id);
+  document.querySelectorAll('[data-evo]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.evo === opt.id));
+  const cont = $('evo'); if (!cont) return;
+  cont.innerHTML = '<p class="small">Cargando…</p>';
+  const pol = S.detPolVista, k = S.det;
+  let fechas, dias, eje = [];
+  if (opt.horas) ({ fechas, dias, eje } = await ventana(S.fecha, S.hora, opt.horas));
+  else { fechas = Array.from({ length:opt.dias }, (_,i) => sumaDias(S.fecha, i-opt.dias+1)).filter((f) => f >= PRIMER_DIA); dias = await Promise.all(fechas.map((f) => cargarDia(f))); }
+  if ($('evo') !== cont || S.det !== k || S.detPolVista !== pol || S.evo !== opt.id) return;
+  const serieDe = (i) => dias[i]?.estaciones[k]?.h[pol] || null;
+  let h = '';
+  if (opt.horas) {
+    const tramo = eje.map((p) => ({ ...p, v: serieDe(p.di)?.[p.i] ?? null }));
+    const polvoT = eje.map((p) => dias[p.di]?.polvo?.[p.i] ?? null);
+    const vs = tramo.map((p) => p.v).filter((v) => v != null);
+    const mx = tramo.reduce((a,p) => p.v != null && (!a || p.v > a.v) ? p : a, null);
+    h += `<div class="resumen">
+      <div><b>${fmtV(vs.length ? vs.reduce((a,b) => a+b,0)/vs.length : null)}</b>media del periodo</div>
+      <div><b>${mx ? fmtV(mx.v) : '–'}</b>máximo${mx ? ', '+fmtCorta(mx.f)+' '+fmtHora(mx.i) : ''}</div>
+      <div><b>${vs.length ? fmtV(Math.min(...vs)) : '–'}</b>mínimo</div>
+      <div><b>${vs.length}/${tramo.length}</b>horas con dato</div></div>`;
+    h += graficaSeries(tramo, [{ nombre:'', color:null, vals:tramo.map((p) => p.v) }], pol, polvoT);
+    h += `<p class="nota">${esc(unidad(pol))}. Desliza la gráfica hacia la izquierda para ver horas anteriores.${polvoT.some((v) => nivPolvo(v) >= 1) ? ' Las franjas color arena marcan horas con posible polvo africano.' : ''}</p>`;
+    // matriz día x hora con los valores
+    h += `<h3 style="margin-top:14px">Valores por día y hora</h3><div class="tabla"><table class="matriz"><thead><tr><th>Día</th>${Array.from({ length:24 }, (_,j) => `<th>${String(j+1).padStart(2,'0')}</th>`).join('')}<th>Media</th><th>Máx.</th><th title="Polvo africano estimado, máximo del día">Polvo</th></tr></thead><tbody>`;
+    [...fechas].reverse().forEach((f) => {
+      const s = serieDe(fechas.indexOf(f)); const vs2 = s ? s.filter((v) => v != null) : [];
+      const med = vs2.length ? vs2.reduce((a,b) => a+b,0)/vs2.length : null, mx2 = vs2.length ? Math.max(...vs2) : null;
+      h += `<tr class="${f === S.fecha ? 'sel' : ''}"><td><a href="#" data-ir="${f}">${diaSem(f)} ${fmtCorta(f)}</a>${iconoOficial(f)}</td>${Array.from({ length:24 }, (_,j) => {
+        const v = s ? s[j] : null, n = nivel(pol, v);
+        return `<td class="c"><span style="background:${v == null ? 'transparent' : bg(n)};color:${v == null ? 'var(--gris)' : fg(n)}">${fmtV(v)}</span></td>`; }).join('')}
+        <td><b>${fmtV(med)}</b></td><td><b>${fmtV(mx2)}</b></td>${(() => { const mp = maxPolvo(dias[fechas.indexOf(f)]?.polvo), n = mp ? nivPolvo(mp.v) : -1;
+          return `<td class="c"><span style="background:${n >= 1 ? POLVO_COL[n] : 'transparent'};color:${n >= 1 ? POLVO_TXT[n] : 'var(--gris)'}">${mp ? fmtV(mp.v) : '–'}</span></td>`; })()}</tr>`;
+    });
+    h += '</tbody></table></div>';
+    cont.innerHTML = h;
+    const sc = cont.querySelector('.graf-scroll'); if (sc) sc.scrollLeft = sc.scrollWidth;
+    return;
+  }
+  const rows = fechas.map((f,i) => { const s = serieDe(i); const vs = s ? s.filter((v) => v != null) : [];
+    return { f, n:vs.length, m:vs.length ? vs.reduce((a,b) => a+b,0)/vs.length : null, x:vs.length ? Math.max(...vs) : null }; });
+  h = grafica(rows.map((r) => ({ v:r.m, et:fmtCorta(r.f) })), pol, `Evolución de ${pol}`);
+  h += `<p class="nota">Media de cada día en ${esc(unidad(pol))}.</p><div class="tabla" style="margin-top:8px"><table><thead><tr><th>Día</th><th>Media</th><th>Máximo</th><th>Horas</th></tr></thead><tbody>`;
+  for (const r of [...rows].reverse()) { const a = nivel(pol,r.m), b = nivel(pol,r.x);
+    h += `<tr class="${r.f === S.fecha ? 'sel' : ''}"><td><a href="#" data-ir="${r.f}">${diaSem(r.f)} ${fmtFecha(r.f)}</a>${iconoOficial(r.f)}</td>
+      <td class="c"><span style="background:${r.m == null ? 'transparent' : bg(a)};color:${fg(a)}">${fmtV(r.m)}</span></td>
+      <td class="c"><span style="background:${r.x == null ? 'transparent' : bg(b)};color:${fg(b)}">${fmtV(r.x)}</span></td><td>${r.n}</td></tr>`; }
+  cont.innerHTML = h + '</tbody></table></div>';
+}
+function tablaTexto(sep) {
+  const e = S.dias.get(S.fecha)?.estaciones[S.det]; if (!e) return '';
+  const disp = POLS.filter((p) => e.h[p]);
+  const l = [['Estación','Fecha','Hora',...disp.map((p) => `${p} (${unidad(p)})`)].join(sep)];
+  for (let j = 0; j < 24; j++) l.push([info(S.det,e).nombre, fmtFecha(S.fecha), fmtHora(j), ...disp.map((p) => e.h[p][j] == null ? '' : String(e.h[p][j]).replace('.',','))].join(sep));
+  return l.join('\r\n');
+}
+async function descargarCSV(btn) {
+  const nombre = `${norm(info(S.det).nombre).replace(/[^A-Z0-9]+/g,'_')}_${S.fecha}.csv`, data = '\ufeff' + tablaTexto(';');
+  try { const d = window.claude && await window.claude.use('downloads'); if (d) { await d.save({ filename:nombre, data }); return; } } catch {}
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], { type:'text/csv;charset=utf-8' })); a.download = nombre; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+}
+
+/* ---------- comparar cabinas ---------- */
+const PALETA = ['#0B5566','#D1495B','#7A5195','#E09F3E','#2E86AB','#3D8C40'];
+const CMP = [{ id:'h24', et:'24 h', horas:24 }, { id:'h48', et:'48 h', horas:48 }, { id:'h72', et:'3 días', horas:72 }, { id:'h168', et:'7 días', horas:168 }];
+function pearson(a, b) {
+  const xs = [], ys = [];
+  a.forEach((v,i) => { if (v != null && b[i] != null) { xs.push(v); ys.push(b[i]); } });
+  if (xs.length < 6) return null;
+  const mx = xs.reduce((s,v) => s+v,0)/xs.length, my = ys.reduce((s,v) => s+v,0)/ys.length;
+  let sxy = 0, sxx = 0, syy = 0;
+  for (let i = 0; i < xs.length; i++) { const dx = xs[i]-mx, dy = ys[i]-my; sxy += dx*dy; sxx += dx*dx; syy += dy*dy; }
+  return sxx && syy ? sxy/Math.sqrt(sxx*syy) : null;
+}
+const corta = (n) => { const s = n.replace(/\s*\(.*\)/,''); return s.length > 13 ? s.split(' ').slice(0,2).join(' ') : s; };
+const fmtR = (r) => r == null ? '–' : r.toFixed(2).replace('.', ',');
+function colorR(r) { if (r == null) return ['transparent','var(--gris)']; if (r >= .8) return ['#0B5566','#fff']; if (r >= .6) return ['#5FA8B8','#062A33']; if (r >= .3) return ['#CFE3E8','#0F242B']; return ['transparent','var(--tinta)']; }
+function textoR(r) { return r >= .8 ? 'muy parecidas' : r >= .6 ? 'bastante parecidas' : r >= .3 ? 'algo parecidas' : 'poco o nada parecidas'; }
+
+async function pintarComp() {
+  const cont = $('vComp');
+  const todas = Object.entries(S.cat).sort((a,b) => (a[1].municipio||'').localeCompare(b[1].municipio||'','es') || (a[1].nombre||a[0]).localeCompare(b[1].nombre||b[0],'es'));
+  S.comp = S.comp.filter((k) => S.cat[k]).slice(0,6);
+  const opt = CMP.find((o) => o.id === S.compEvo) || CMP[1];
+  const pol = S.detPol || 'PM10';
+  let h = `<div class="bloque"><h3>Cabinas a comparar</h3><p class="nota" style="margin:-4px 0 10px">Elige de 2 a 6. Se comparan hasta el día y la hora de arriba.</p><div class="sel-est">${todas.map(([k,c]) => {
+      const idx = S.comp.indexOf(k);
+      return `<button class="chip" data-ck="${esc(k)}" aria-pressed="${idx >= 0}"><i style="${idx >= 0 ? 'background:'+PALETA[idx] : ''}"></i>${esc(c.nombre || k)}</button>`; }).join('')}</div></div>`;
+  h += `<div class="bloque"><div class="pols" style="margin:0 0 8px;padding:0">${POLS.map((p) => `<button class="chip" data-cp="${p}" aria-pressed="${p === pol}">${p}</button>`).join('')}</div>
+    <div class="evo-sel" style="margin:0;padding:0">${CMP.map((o) => `<button class="chip" data-cv="${o.id}" aria-pressed="${o.id === opt.id}">${o.et}</button>`).join('')}</div></div>`;
+  if (S.comp.length < 2) { cont.innerHTML = h + '<div class="vacio"><strong>Elige al menos dos cabinas.</strong>Toca sus nombres en la lista de arriba.</div>'; return; }
+  cont.innerHTML = h + '<div class="bloque"><p class="small">Cargando…</p></div>';
+  const firma = JSON.stringify([S.comp, pol, opt.id, S.fecha, S.hora]); S.compFirma = firma;
+  const { dias, eje } = await ventana(S.fecha, S.hora, opt.horas);
+  if (S.compFirma !== firma || S.vista !== 'comp') return;
+  const series = S.comp.map((k,idx) => ({ k, nombre:S.cat[k].nombre || k, color:PALETA[idx], vals: eje.map((p) => {
+      const est = dias[p.di]?.estaciones; if (!est) return null;
+      const clave = Object.keys(est).find((c) => norm(c) === k); return clave ? (est[clave].h[pol]?.[p.i] ?? null) : null; }) }));
+  const polvoT = eje.map((p) => dias[p.di]?.polvo?.[p.i] ?? null);
+  const conDatos = series.filter((s) => s.vals.some((v) => v != null));
+
+  // gráfica
+  h += `<div class="bloque"><h3>${pol} por horas, ${opt.et}</h3><div class="leyenda-cmp">${series.map((s) => {
+      const vs = s.vals.filter((v) => v != null);
+      return `<div><i style="background:${s.color}"></i>${esc(s.nombre)}<span>media <b>${vs.length ? fmtV(vs.reduce((a,b) => a+b,0)/vs.length) : '–'}</b></span><span>máx. <b>${vs.length ? fmtV(Math.max(...vs)) : '–'}</b></span></div>`; }).join('')}</div>`;
+  h += conDatos.length ? graficaSeries(eje, conDatos, pol, polvoT) : `<p class="small">Ninguna de estas cabinas mide ${pol}.</p>`;
+  h += `<p class="nota">${esc(unidad(pol))}. Desliza para ver horas anteriores.${polvoT.some((v) => nivPolvo(v) >= 1) ? ' Franjas color arena: posible polvo africano.' : ''}</p></div>`;
+
+  // similitud
+  const R = series.map((a) => series.map((b) => a === b ? 1 : pearson(a.vals, b.vals)));
+  const conPolvo = polvoT.some((v) => v != null) && (pol === 'PM10' || pol === 'PM2.5');
+  let pares = [];
+  for (let i = 0; i < series.length; i++) for (let j = i+1; j < series.length; j++) if (R[i][j] != null) pares.push({ a:series[i].nombre, b:series[j].nombre, r:R[i][j] });
+  pares.sort((p,q) => q.r - p.r);
+  h += `<div class="bloque"><h3>¿Se parecen?</h3><div class="tabla"><table class="corr"><thead><tr><th></th>${series.map((s) => `<th style="color:${s.color}">${esc(corta(s.nombre))}</th>`).join('')}${conPolvo ? '<th style="color:#8A6424">Polvo</th>' : ''}</tr></thead><tbody>`;
+  series.forEach((s,i) => {
+    h += `<tr><td style="color:${s.color};font-weight:700">${esc(s.nombre)}</td>${series.map((_,j) => { if (i === j) return '<td class="c"><span>—</span></td>'; const [b,c] = colorR(R[i][j]); return `<td class="c"><span style="background:${b};color:${c}">${fmtR(R[i][j])}</span></td>`; }).join('')}`;
+    if (conPolvo) { const r = pearson(s.vals, polvoT), [b,c] = colorR(r); h += `<td class="c"><span style="background:${b};color:${c}">${fmtR(r)}</span></td>`; }
+    h += '</tr>';
+  });
+  h += '</tbody></table></div>';
+  if (pares.length) {
+    const best = pares[0], worst = pares[pares.length-1];
+    h += `<p class="frase"><b>${esc(best.a)}</b> y <b>${esc(best.b)}</b> son las que más se parecen (r = ${fmtR(best.r)}): ${textoR(best.r)}, suben y bajan a la vez.</p>`;
+    if (pares.length > 1) h += `<p class="frase"><b>${esc(worst.a)}</b> y <b>${esc(worst.b)}</b> son las que menos (r = ${fmtR(worst.r)}): ${textoR(worst.r)}.</p>`;
+  } else h += '<p class="frase">No hay suficientes horas en común para comparar.</p>';
+  h += `<p class="nota">El coeficiente r (de −1 a 1) mide si las curvas se mueven igual, no si tienen el mismo nivel: para el nivel mira la media y el máximo de arriba. Con r ≥ 0,8 lo más probable es una causa común (meteorología, un foco compartido o polvo africano).${conPolvo ? ' La columna Polvo indica cuánto sigue cada cabina al polvo africano estimado.' : ''} Se calcula con las horas en que ambas tienen dato.</p></div>`;
+
+  const diasVent = [...new Set(eje.map((p) => p.f))], conInf = diasVent.filter((f) => informeOficial(f));
+  h += `<div class="bloque"><h3>Informes oficiales en el periodo</h3>${conInf.length
+    ? '<ul class="enlaces">' + conInf.map((f) => `<li>📄 <a href="${esc(informeOficial(f).pdf)}" target="_blank" rel="noopener">${diaSem(f)} ${fmtFecha(f)}: ${esc(informeOficial(f).titulo)}</a></li>`).join('') + '</ul>'
+    : '<p class="small">El Ministerio no publicó predicción de intrusión africana para ninguno de estos días.</p>'}
+    <p class="nota">Fuente: predicciones de intrusión de aire africano del Ministerio (MITECO), elaboradas por el CSIC. <a href="${paginaMiteco(S.fecha)}" target="_blank" rel="noopener">Ver todas las de ${mesTexto(S.fecha)}</a>.</p></div>`;
+  // tabla
+  h += `<div class="bloque"><h3>Tabla por horas</h3><div class="tabla"><table><thead><tr><th>Hora</th>${series.map((s) => `<th style="color:${s.color}">${esc(corta(s.nombre))}</th>`).join('')}${polvoT.some((v) => v != null) ? '<th style="color:#8A6424">Polvo</th>' : ''}</tr></thead><tbody>`;
+  for (let i = eje.length-1; i >= 0; i--) {
+    const p = eje[i];
+    h += `<tr class="${p.f === S.fecha && p.i === S.hora ? 'sel' : ''}"><td>${fmtCorta(p.f)} ${fmtHora(p.i)}</td>${series.map((s) => { const v = s.vals[i], n = nivel(pol,v); return `<td class="c"><span style="background:${v == null ? 'transparent' : bg(n)};color:${v == null ? 'var(--gris)' : fg(n)}">${fmtV(v)}</span></td>`; }).join('')}`;
+    if (polvoT.some((v) => v != null)) { const n = nivPolvo(polvoT[i]); h += `<td class="c"><span style="background:${n >= 1 ? POLVO_COL[n] : 'transparent'};color:${n >= 1 ? POLVO_TXT[n] : 'var(--gris)'}">${fmtV(polvoT[i])}</span></td>`; }
+    h += '</tr>';
+  }
+  h += `</tbody></table></div><div class="fila-bot" style="margin-top:12px"><button class="boton" id="copiarComp">Copiar para Excel</button></div></div>`;
+  cont.innerHTML = h;
+  const sc = cont.querySelector('.graf-scroll'); if (sc) sc.scrollLeft = sc.scrollWidth;
+  S.compTexto = [['Fecha','Hora',...series.map((s) => s.nombre),'Polvo CAMS','Informe MITECO'].join('\t'), ...eje.map((p,i) => [fmtFecha(p.f), fmtHora(p.i), ...series.map((s) => s.vals[i] == null ? '' : String(s.vals[i]).replace('.',',')), polvoT[i] == null ? '' : String(polvoT[i]).replace('.',','), informeOficial(p.f)?.pdf || ''].join('\t'))].join('\r\n');
+}
+
+/* ---------- info ---------- */
+function pintarInfo() {
+  let h = `<div class="bloque"><h3>Niveles</h3><div class="escala">${NIVELES.map((n,i) => `<div><i style="background:${COLOR[i]}"></i>${n}</div>`).join('')}</div></div>`;
+  h += `<div class="bloque"><h3>Límites de cada nivel (µg/m³)</h3><div class="tabla"><table><thead><tr><th>Nivel</th>${POLS_ICA.map((p) => `<th>${p}</th>`).join('')}</tr></thead><tbody>`;
+  NIVELES.forEach((n,i) => { h += `<tr><td><span class="pill" style="background:${COLOR[i]};color:${COLOR_TXT[i]}">${n}</span></td>${POLS_ICA.map((p) => { const b = BANDAS[p]; return `<td>${i === 0 ? '0' : b[i-1]}${i < 5 ? '–'+b[i] : '+'}</td>`; }).join('')}</tr>`; });
+  h += `</tbody></table></div><p class="small">El índice oficial usa medias de 24 horas para PM10 y PM2.5. Aquí se aplican al valor horario, así que para partículas el color es orientativo. El CO no forma parte del índice.</p></div>`;
+  h += `<div class="bloque" id="infoPolvo"><h3>Polvo africano (intrusiones saharianas)</h3>
+    <p class="small">La app muestra el polvo mineral en superficie que estima el modelo CAMS de Copernicus para la Bahía de Algeciras, hora a hora. Es una estimación de modelo, no una medida de las cabinas, y sirve para señalar horas en las que el PM10 puede estar inflado por polvo del Sáhara.</p>
+    <div class="escala">${POLVO_NOM.map((n,i) => `<div><i style="background:${i ? POLVO_COL[i] : 'var(--fondo)'};border:1px solid var(--linea)"></i>${n}: ${['menos de 10','10 a 25','25 a 50','50 o más'][i]} µg/m³</div>`).join('')}</div>
+    <p class="small">Estos cortes son orientativos, propios de la app. Pistas en los datos medidos que refuerzan la sospecha: el PM10 sube a la vez en muchas cabinas (mira Comparar), y el PM2.5 sube mucho menos que el PM10.</p>
+    </div>`;
+  const inf = informeOficial(S.fecha);
+  h += `<div class="bloque" id="infoOficial"><h3>Informes oficiales para el ${fmtFecha(S.fecha)}</h3>
+    ${inf ? htmlOficial(S.fecha, false) : `<p class="small">No consta predicción de intrusión africana del Ministerio para este día.${S.fecha < '2023-08-01' ? ' Antes de agosto de 2023 el índice automático puede estar incompleto: revisa el listado del año.' : ''}</p>`}
+    <ul class="enlaces">
+      <li><a href="${paginaMiteco(S.fecha)}" target="_blank" rel="noopener">Predicciones de ${mesTexto(S.fecha)}</a><small>Informe diario del Ministerio, elaborado por el CSIC, cuando se prevé que una masa de aire africano afecte a España.</small></li>
+      <li><a href="${MITECO_ANUALES}" target="_blank" rel="noopener">Episodios naturales validados, informes anuales</a><small>Lo que vale para descontar superaciones de PM10 por zona. Se publica al año siguiente.</small></li>
+      <li><a href="${MITECO_INFORME_2024}" target="_blank" rel="noopener">Informe de episodios naturales de partículas 2024 (PDF)</a><small>Último informe anual enlazado por el Ministerio.</small></li>
+      <li><a href="${MITECO_METODO}" target="_blank" rel="noopener">Metodología oficial para episodios naturales (PDF)</a><small>Procedimiento España-Portugal para identificar y descontar aportes naturales.</small></li>
+    </ul>
+    <p class="nota">La predicción diaria es para todo el país: para citar un episodio en un informe, comprueba que el PDF menciona el sur peninsular y, si hay superación, usa el informe anual validado.</p></div>`;
+  h += `<div class="bloque"><h3>De dónde salen los datos</h3><p class="small">Ficheros horarios que publica cada día la Junta de Andalucía para la provincia de Cádiz, desde el 25/10/2021. Son datos sin validar y pueden cambiar respecto a los informes oficiales. Las horas van de 01:00 a 24:00, como en los ficheros de la Junta.</p>
+    <p class="small">${S.demo ? '<b>Ahora mismo estás viendo datos de demostración.</b>' : 'Datos reales descargados automáticamente cada hora.'}</p><p class="small">Aire Rápido, versión ${VERSION}.</p></div>`;
+  $('infoCuerpo').innerHTML = h;
+}
+
+/* ---------- ubicación ---------- */
+function pedirPos() {
+  if (!navigator.geolocation) { $('estado').textContent = 'Este navegador no permite ubicación'; return; }
+  $('estado').textContent = 'Buscando tu ubicación…';
+  navigator.geolocation.getCurrentPosition((p) => {
+    S.pos = [p.coords.latitude, p.coords.longitude];
+    if (S.vista === 'mapa' && S.vb) { const w = S.vb.w, h = S.vb.h; S.vb = { x:px(S.pos[1])-w/2, y:py(S.pos[0])-h/2, w, h }; }
+    pintar();
+  }, () => { $('estado').textContent = 'Sin permiso de ubicación. Actívalo en el navegador.'; setTimeout(pintarEstado, 3500); },
+  { enableHighAccuracy:false, timeout:10000, maximumAge:300000 });
+}
+
+/* ---------- eventos ---------- */
+function cambiarVista(v) {
+  S.vista = v; $('vLista').hidden = v !== 'lista'; $('vMapa').hidden = v !== 'mapa'; $('vComp').hidden = v !== 'comp';
+  for (const t of ['tLista','tMapa','tComp']) $(t).removeAttribute('aria-current');
+  $({ lista:'tLista', mapa:'tMapa', comp:'tComp' }[v]).setAttribute('aria-current','page');
+  if (v === 'mapa') { window.scrollTo(0,0); requestAnimationFrame(() => { altoMapa(); S.vb = ajustarAspecto(S.vb || VISTA_INICIAL()); pintar(); }); } else pintar();
+}
+function eventos() {
+  $('dias').onclick = (ev) => {
+    const b = ev.target.closest('button'); if (!b) return;
+    if (b.id === 'btnCal') { const i = $('fecha'); i.value = S.fecha; i.min = PRIMER_DIA; i.max = hoyStr(); try { i.showPicker(); } catch { i.click(); } return; }
+    irA(b.dataset.f, { forzar: b.dataset.f === hoyStr() });
+  };
+  $('fecha').onchange = (e) => { if (e.target.value) irA(e.target.value); };
+  $('hora').oninput = (e) => { S.hora = +e.target.value; pintar(); if (S.det) pintarDetalle(); };
+  $('btnUltima').onclick = () => { const u = ultimaHora(S.dias.get(S.fecha)); if (u >= 0) { S.hora = u; pintar(); } };
+  $('pols').onclick = (e) => { const b = e.target.closest('[data-p]'); if (!b) return; S.pol = b.dataset.p; guardar('pol', S.pol); if (S.pol !== 'ICA') { S.detPol = S.pol; guardar('detPol', S.pol); } pintarPols(); pintar(); };
+  $('vLista').onclick = (e) => { if (e.target.id === 'quitarPos') { S.pos = null; pintar(); return; }
+    if (e.target.closest('#avisoPolvo')) { pintarInfo(); $('info').showModal(); setTimeout(() => $('infoPolvo')?.scrollIntoView({ block:'start' }), 60); return; } const b = e.target.closest('[data-k]'); if (b) abrirDetalle(b.dataset.k); };
+  $('tLista').onclick = () => cambiarVista('lista');
+  $('tMapa').onclick = () => cambiarVista('mapa');
+  $('tComp').onclick = () => { window.scrollTo(0,0); cambiarVista('comp'); };
+  $('vComp').onclick = async (e) => {
+    const q = (s) => e.target.closest(s);
+    if (q('[data-ck]')) { const k = q('[data-ck]').dataset.ck; const i = S.comp.indexOf(k);
+      if (i >= 0) S.comp.splice(i,1); else if (S.comp.length < 6) S.comp.push(k); else return;
+      guardar('comp', S.comp); pintarComp(); return; }
+    if (q('[data-cp]')) { S.detPol = q('[data-cp]').dataset.cp; guardar('detPol', S.detPol); pintarComp(); return; }
+    if (q('[data-cv]')) { S.compEvo = q('[data-cv]').dataset.cv; guardar('compEvo', S.compEvo); pintarComp(); return; }
+    if (e.target.id === 'copiarComp') { const t = e.target; try { await navigator.clipboard.writeText(S.compTexto || ''); t.textContent = 'Copiada'; } catch { t.textContent = 'No se pudo copiar'; } setTimeout(() => t.textContent = 'Copiar para Excel', 1800); }
+  };
+  $('tCerca').onclick = () => { pedirPos(); };
+  $('btnInfo').onclick = () => { pintarInfo(); $('info').showModal(); };
+  $('infoCerrar').onclick = () => $('info').close();
+  $('detCerrar').onclick = () => $('detalle').close();
+  $('detalle').addEventListener('close', () => { S.det = null; });
+  for (const d of [$('detalle'), $('info')]) d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+  $('detCuerpo').onclick = async (e) => {
+    const t = e.target, q = (s) => t.closest(s);
+    if (q('[data-dp]')) { S.detPol = q('[data-dp]').dataset.dp; guardar('detPol', S.detPol); pintarDetalle(); return; }
+    if (q('[data-dia]')) { await irA(sumaDias(S.fecha, +q('[data-dia]').dataset.dia)); return; }
+    if (q('[data-evo]')) { pintarEvo(q('[data-evo]').dataset.evo); return; }
+    if (q('[data-ir]')) { e.preventDefault(); await irA(q('[data-ir]').dataset.ir, { ultima:false }); return; }
+    if (t.id === 'csv') descargarCSV(t);
+    if (t.id === 'copiar') { try { await navigator.clipboard.writeText(tablaTexto('\t')); t.textContent = 'Copiada'; } catch { t.textContent = 'No se pudo copiar'; } setTimeout(() => t.textContent = 'Copiar para Excel', 1800); }
+  };
+  new ResizeObserver(() => document.documentElement.style.setProperty('--hdr', $('top').offsetHeight + 'px')).observe($('top'));
+  eventosMapa();
+}
+
+/* ---------- arranque ---------- */
+(async function init() {
+  $('ver').textContent = VERSION;
+  for (const [k,v] of Object.entries(CATALOGO)) S.cat[norm(k)] = v;
+  S.comp = leer('comp', ['E5: PALMONES','E4: RINCONCILLO','ALGECIRAS EPS','LA LINEA']);
+  S.compEvo = leer('compEvo', 'h48'); S.detPol = leer('detPol', 'PM10');
+  S.pol = leer('pol', 'ICA'); if (!['ICA',...POLS].includes(S.pol)) S.pol = 'ICA';
+  pintarPols(); eventos();
+  try { const st = await getJSON('stations.json'); for (const [k,v] of Object.entries(st.estaciones || {})) S.cat[norm(k)] = { ...(S.cat[norm(k)] || {}), ...v }; } catch {}
+  for (const [f,[pdf,tit]] of Object.entries(MITECO_SEED)) S.miteco[f] = { pdf: MITECO_SEED_BASE + pdf, titulo: 'Predicción para ' + tit, pagina: paginaMiteco(f) };
+  try { const m = await getJSON('data/miteco_intrusiones.json'); Object.assign(S.miteco, m.dias || {}); } catch {}
+  try { S.latest = await getJSON('data/latest.json'); } catch { S.latest = null; }
+  S.demo = !S.latest || new URLSearchParams(location.search).has('demo');
+  pintarAvisoDemo();
+  await irA(S.demo ? hoyStr() : S.latest.fecha);
+})();
+</script>
+</body>
+</html>
