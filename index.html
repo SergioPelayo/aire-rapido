@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Aire Rápido · index.html · v1.7.0 -->
+<!-- Aire Rápido · index.html · v1.8.0 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -764,6 +764,7 @@ main { max-width:760px; margin:0 auto; }
 .tile { border-radius:10px; padding:6px 4px 5px; text-align:center; line-height:1.05; }
 .tile span { display:block; font:600 .72rem var(--num); opacity:.85; }
 .tile b { font:700 1.25rem var(--num); font-variant-numeric:tabular-nums; }
+sup.eea { font:700 .55rem var(--txt); letter-spacing:.03em; padding:0 3px; border-radius:3px; background:rgba(15,36,43,.14); vertical-align:1px; }
 
 .seccion { display:flex; align-items:baseline; justify-content:space-between; margin:6px 4px -2px; }
 .seccion h3 { margin:0; font:600 1.02rem var(--num); color:var(--gris); }
@@ -939,7 +940,7 @@ a.doc { text-decoration:none; font-size:.85rem; margin-left:4px; }
       <div class="leyenda" id="leyendaMapa"></div>
     </div>
   </section>
-  <p class="pie">Datos: Red de Vigilancia y Control de la Calidad del Aire de Andalucía, Junta de Andalucía (CC BY 4.0). Valores horarios sin validar. Polvo africano: modelo CAMS de Copernicus vía Open-Meteo (CC BY 4.0). Mapa: ortofoto PNOA © IGN (CC BY 4.0), Esri, OpenStreetMap; costa del esquema: Natural Earth. Versión <span id="ver"></span></p>
+  <p class="pie">Datos: Red de Vigilancia y Control de la Calidad del Aire de Andalucía, Junta de Andalucía (CC BY 4.0). Datos complementarios: Agencia Europea de Medio Ambiente (EEA). Valores horarios sin validar. Polvo africano: modelo CAMS de Copernicus vía Open-Meteo (CC BY 4.0). Mapa: ortofoto PNOA © IGN (CC BY 4.0), Esri, OpenStreetMap; costa del esquema: Natural Earth. Versión <span id="ver"></span></p>
 </main>
 
 <nav class="nav"><div>
@@ -973,9 +974,9 @@ a.doc { text-decoration:none; font-size:.85rem; margin-left:4px; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
-/* Aire Rápido · app · v1.7.0 */
+/* Aire Rápido · app · v1.8.0 */
 'use strict';
-const VERSION = '1.7.0';
+const VERSION = '1.8.0';
 const PRIMER_DIA = '2021-10-25';
 const POLS = ['SO2','NO2','PM10','PM2.5','O3','CO'];
 const POLS_ICA = ['SO2','NO2','PM10','PM2.5','O3'];
@@ -989,9 +990,9 @@ const LIMITES = {
 const maxLimite = (pol) => Math.max(0, ...(LIMITES[pol] || []).map((l) => l.v));
 function lineasLimite(pol, x1, x2, y, etiquetasX) {
   let s = '';
-  for (const l of LIMITES[pol] || []) {
+  for (const [li, l] of (LIMITES[pol] || []).entries()) {
     s += `<line x1="${x1}" x2="${x2}" y1="${y(l.v)}" y2="${y(l.v)}" stroke="${l.col}" stroke-width="1.8"/>`;
-    for (const ex of etiquetasX) s += `<text x="${ex}" y="${y(l.v)-4}" font-size="10" font-weight="700" fill="${l.col}" stroke="var(--papel)" stroke-width="3" paint-order="stroke">${l.et}</text>`;
+    for (const ex of etiquetasX) s += `<text x="${ex}" y="${li ? y(l.v)+12 : y(l.v)-4}" font-size="10" font-weight="700" fill="${l.col}" stroke="var(--papel)" stroke-width="3" paint-order="stroke">${l.et}</text>`;
   }
   return s;
 }
@@ -1169,7 +1170,8 @@ async function irA(f, { ultima=true, forzar=false } = {}) {
 /* ---------- lista ---------- */
 function htmlTiles(e, hora) {
   return POLS.filter((p) => e.h[p]).map((p) => { const v = e.h[p][hora]; const n = nivel(p, v);
-    return `<div class="tile" style="background:${v == null ? 'var(--fondo)' : bg(n)};color:${v == null ? 'var(--gris)' : fg(n)}"><span>${p}</span><b>${fmtV(v)}</b></div>`; }).join('');
+    const eea = (e.src || {})[p] === 'EEA';
+    return `<div class="tile" style="background:${v == null ? 'var(--fondo)' : bg(n)};color:${v == null ? 'var(--gris)' : fg(n)}"${eea ? ' title="Dato de la Agencia Europea de Medio Ambiente"' : ''}><span>${p}${eea ? ' <sup class="eea">EEA</sup>' : ''}</span><b>${fmtV(v)}</b></div>`; }).join('');
 }
 function pintarLista() {
   const dia = S.dias.get(S.fecha);
@@ -1433,7 +1435,8 @@ function pintarDetalle() {
   S.detPolVista = polDet;
   const serie = e.h[polDet], val = serie.map((v,j) => ({v,j})).filter((o) => o.v != null);
   const esPM = polDet === 'PM10' || polDet === 'PM2.5';
-  const media = esPM ? mediaDiaria(serie) : (val.length ? val.reduce((a,o) => a+o.v, 0)/val.length : null);
+  const esEEA = (e.src || {})[polDet] === 'EEA';
+  const media = esPM ? mediaDiaria(serie, esEEA) : (val.length ? val.reduce((a,o) => a+o.v, 0)/val.length : null);
   const max = val.reduce((a,o) => !a || o.v > a.v ? o : a, null);
 
   h += `<div class="bloque"><h3>Ahora mismo a las ${fmtHora(S.hora)}</h3><div class="tiles" style="padding:0">${htmlTiles(e, S.hora)}</div></div>`;
@@ -1447,6 +1450,7 @@ function pintarDetalle() {
       <div><b>${val.length}/24</b>horas con dato</div>
     </div>
     ${grafica(serie.map((v,j) => ({ v, et:String(j+1).padStart(2,'0') })), polDet, `${polDet} el ${fmtFecha(S.fecha)}`, S.dias.get(S.fecha)?.polvo)}
+    ${esEEA ? `<p class="nota"><sup class="eea">EEA</sup> ${esc(polDet)} de esta cabina viene de la Agencia Europea de Medio Ambiente: la Junta no lo publica aquí ese día. Son valores horarios${esPM ? ' (no medias móviles de 24 h como los de la Junta); la media diaria es el promedio de las horas' : ''}.</p>` : ''}
     ${textoPolvoDia(S.dias.get(S.fecha))}
   </div>`;
   if (informeOficial(S.fecha)) h += htmlOficial(S.fecha, false);
@@ -1466,7 +1470,7 @@ function pintarDetalle() {
     <div id="evo" style="margin-top:10px"></div></div>`;
   const st = (p) => { const vs = e.h[p].filter((v) => v != null); return vs.length ? { m:vs.reduce((a,b) => a+b,0)/vs.length, x:Math.max(...vs) } : { m:null, x:null }; };
   h += `<div class="bloque"><h3>Tabla del día, en µg/m³${disp.includes('CO') ? ' (CO en mg/m³)' : ''}</h3><div class="tabla"><table>
-    <thead><tr><th>Hora</th>${disp.map((p) => `<th>${p}</th>`).join('')}</tr></thead><tbody>`;
+    <thead><tr><th>Hora</th>${disp.map((p) => `<th>${p}${(e.src || {})[p] === 'EEA' ? ' <sup class="eea">EEA</sup>' : ''}</th>`).join('')}</tr></thead><tbody>`;
   for (let j = 0; j < 24; j++) h += `<tr class="${j === S.hora ? 'sel' : ''}"><td>${fmtHora(j)}</td>${disp.map((p) => { const v = e.h[p][j], n = nivel(p,v);
       return `<td class="c"><span style="background:${v == null ? 'transparent' : bg(n)};color:${v == null ? 'var(--gris)' : fg(n)}">${fmtV(v)}</span></td>`; }).join('')}</tr>`;
   h += `</tbody><tfoot><tr><td>Media</td>${disp.map((p) => `<td>${fmtV(st(p).m)}</td>`).join('')}</tr><tr><td>Máximo</td>${disp.map((p) => `<td>${fmtV(st(p).x)}</td>`).join('')}</tr></tfoot></table></div>
@@ -1636,8 +1640,13 @@ async function pintarEvo(modo) {
   cont.innerHTML = h + '</tbody></table></div>';
 }
 /* ---------- superaciones del valor límite diario de partículas ---------- */
-function mediaDiaria(s) {
+function mediaDiaria(s, eea) {
   if (!s) return null;
+  if (eea) {                                     // EEA: valores horarios (o solo la media diaria a las 24:00)
+    const vs = s.filter((v) => v != null);
+    if (vs.length === 1 && s[23] != null) return s[23];
+    return vs.length >= 18 ? vs.reduce((a,b) => a+b,0)/vs.length : null;
+  }
   if (s[23] != null) return s[23];               // la Junta publica medias móviles de 24 h: a las 24:00 es la media del día
   const vs = s.filter((v) => v != null);
   return vs.length >= 18 ? vs.reduce((a,b) => a+b,0)/vs.length : null;
@@ -1675,7 +1684,7 @@ async function pintarSuperaciones() {
   const res = {};
   for (const pol of ['PM10','PM2.5'].filter((p) => disp.includes(p))) {
     const lim = pol === 'PM10' ? 50 : 25;
-    const filas = fechas.map((f,i) => ({ f, v: mediaDiaria(serie(dias[i], pol)) }));
+    const filas = fechas.map((f,i) => ({ f, v: mediaDiaria(serie(dias[i], pol), (dias[i]?.estaciones[k]?.src || {})[pol] === 'EEA') }));
     const conDato = filas.filter((r) => r.v != null);
     const sup = conDato.filter((r) => r.v > lim);
     res[pol] = { lim, conDato:conDato.length, sup, sup45: pol === 'PM10' ? conDato.filter((r) => r.v > 45).length : null,
@@ -1832,7 +1841,8 @@ function pintarInfo() {
     <p class="small"><b>Android (Chrome):</b> pulsa el botón <b>Instalar</b> de arriba, o menú ⋮ > <b>Instalar aplicación</b>.</p>
     <p class="small"><b>iPhone (Safari):</b> botón <b>Compartir</b> (el cuadrado con la flecha) > <b>Añadir a pantalla de inicio</b>. En iPhone solo funciona desde Safari.</p>
     <p class="small">Una vez instalada se abre a pantalla completa, con su icono, y muestra los últimos datos descargados aunque no haya cobertura.</p></div>`;
-  h += `<div class="bloque"><h3>De dónde salen los datos</h3><p class="small">Ficheros horarios que publica cada día la Junta de Andalucía para la provincia de Cádiz, desde el 25/10/2021. Son datos sin validar y pueden cambiar respecto a los informes oficiales. Las horas van de 01:00 a 24:00, como en los ficheros de la Junta.</p>
+  h += `<div class="bloque"><h3>De dónde salen los datos</h3><p class="small"><b>Junta de Andalucía:</b> ficheros horarios que publica cada día para la provincia de Cádiz, desde el 25/10/2021.</p>
+    <p class="small"><b>Agencia Europea de Medio Ambiente (EEA):</b> completa los contaminantes que la Junta no publica en una cabina, como el PM10 de Palmones, Colegio Los Barrios y El Zabal, o el CO. Se marcan con <sup class="eea">EEA</sup>. Son datos validados (E1a) hasta el año pasado y en tiempo real sin validar (E2a) después. Nunca sustituyen un dato de la Junta.</p><p class="small"> Son datos sin validar y pueden cambiar respecto a los informes oficiales. Las horas van de 01:00 a 24:00, como en los ficheros de la Junta.</p>
     <p class="small">${S.demo ? '<b>Ahora mismo estás viendo datos de demostración.</b>' : 'Datos reales descargados automáticamente cada hora.'}</p><p class="small">Aire Rápido, versión ${VERSION}.</p></div>`;
   $('infoCuerpo').innerHTML = h;
 }

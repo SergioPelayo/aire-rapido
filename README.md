@@ -1,4 +1,4 @@
-# Aire Rápido · v1.7.0
+# Aire Rápido · v1.8.0
 
 Consulta rápida de las cabinas de calidad del aire del Campo de Gibraltar: lista y mapa con el valor de cada estación, a cualquier hora de cualquier día desde el 25/10/2021, con la tabla numérica hora a hora, gráfica con el valor en cada punto y evolución de 7, 30 o 90 días.
 
@@ -61,6 +61,10 @@ Comprobación rápida desde un terminal: `nslookup calidaddelaire.pelayoingenier
 - Las horas son las del fichero de la Junta (01:00 a 24:00).
 - GitHub puede retrasar unos minutos las ejecuciones programadas.
 
+## Datos complementarios de la Agencia Europea (EEA)
+
+`scripts/eea_fetch.py` descarga del Air Quality Download Service de la EEA los datos de nuestras cabinas (E1a validados y E2a en tiempo real) y rellena solo los contaminantes que la Junta no publica en una cabina un día dado. Nunca sustituye un dato de la Junta. Cada valor añadido queda marcado en el JSON del día con `"src": {"PM10": "EEA"}`. Los valores de la EEA son horarios (no medias móviles), así que la app calcula su media diaria como promedio de las horas. En la VPS, `vps/eea.sh` lo ejecuta cada día a las 7:40 para los últimos 10 días; el log queda en `~/aire-rapido-eea.log`.
+
 ## Polvo africano
 
 El script pide cada hora a Open-Meteo el polvo mineral en superficie que estima el modelo CAMS (Copernicus) en la Bahía de Algeciras y lo guarda en el JSON de cada día (`polvo`, µg/m³, y `aod`, espesor óptico). La carga histórica también lo trae. Es un modelo, no una medida, y los cortes de nivel de la app son orientativos. Para confirmar un episodio con validez oficial usa los episodios naturales que publica el Ministerio (enlace en la hoja “i” de la app).
@@ -79,6 +83,7 @@ Datos: Red de Vigilancia y Control de la Calidad del Aire de Andalucía, Conseje
 
 ## Versiones
 
+- **1.8.0** (23/09/2026): datos complementarios de la Agencia Europea de Medio Ambiente (EEA) para los contaminantes que la Junta no publica en una cabina (PM10 de Palmones, Colegio Los Barrios y El Zabal; CO de Algeciras EPS, Campamento, Cortijillos, Escuela de Hostelería y Guadarranque; huecos puntuales del resto). Se marcan con la etiqueta EEA en la app y su media diaria de partículas se calcula como promedio horario. Script `scripts/eea_fetch.py` (v1.0.0) y `vps/eea.sh` (cron diario a las 7:40).
 - **1.7.0** (23/09/2026): instalable como app (PWA). Icono propio en todos los tamaños (Android, iPhone, pestaña del navegador), `manifest.webmanifest`, `sw.js` (v1.0.0) para abrirla sin conexión con los últimos datos, botón **Instalar** en la cabecera e instrucciones para iPhone en la hoja “i”.
 - **1.6.0** (23/09/2026): mapa nuevo con Leaflet. Capas: ortofoto PNOA del IGN con nombres (por defecto), satélite mundial de Esri (cubre también Gibraltar) y callejero de OpenStreetMap; se recuerda la elegida. Pines con el valor y el color del nivel, nombre de la cabina al acercar, ficha rápida al tocar (valores de todos los contaminantes, Ver ficha y Cómo llegar) y tu posición. Si no cargan las imágenes (sin conexión, bloqueo) vuelve solo al esquema de la bahía.
 - **1.5.0** (23/09/2026): líneas de valor límite en las gráficas de partículas (PM10: límite diario legal 50 y límite 2030/OMS 45; PM2.5: límite diario 2030 de 25 y OMS 15). Contador de superaciones por cabina y año: días de PM10 por encima de 50 frente a los 35 permitidos, días por encima de 45 frente a los 18 de 2030, cuántos tienen informe de intrusión africana, barras por mes, lista de días y copia para Excel. La media diaria de partículas se toma del valor de las 24:00 (media de 24 h en los ficheros de la Junta). Descarga desde la VPS (`vps/actualizar.sh`, cron cada hora) porque la Junta no responde a los servidores de GitHub; script v1.4.2 con lectura de las cabeceras reales (`D_PROVINCIA`, `'PM10'`…).
