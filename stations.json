@@ -1,23 +1,141 @@
 {
-  "_version": "1.2.0",
+  "_version": "1.3.0",
   "_nota": "Coordenadas oficiales de los metadatos de la Agencia Europea de Medio Ambiente (PanEuropean_metadata, códigos EoI en 'eea'). aprox=true: asignación pendiente de confirmar o estación no localizada en la EEA.",
   "estaciones": {
-    "ALGECIRAS EPS":                 { "nombre": "Algeciras EPS",                "municipio": "Algeciras",   "lat": 36.13623, "lon": -5.45343, "eea": "ES1664A", "aprox": false },
-    "E4: RINCONCILLO":               { "nombre": "El Rinconcillo (E4)",          "municipio": "Algeciras",   "lat": 36.16170, "lon": -5.44260, "eea": "ES1637A", "aprox": false },
-    "E5: PALMONES":                  { "nombre": "Palmones (E5)",                "municipio": "Los Barrios", "lat": 36.17470, "lon": -5.43277, "eea": "ES0633A", "aprox": false },
-    "CORTIJILLOS":                   { "nombre": "Cortijillos",                  "municipio": "Los Barrios", "lat": 36.19048, "lon": -5.43576, "eea": "ES1076A", "aprox": false },
-    "E1: COLEGIO LOS BARRIOS":       { "nombre": "Colegio Los Barrios (E1)",     "municipio": "Los Barrios", "lat": 36.18562, "lon": -5.48893, "eea": "ES0629A", "aprox": true },
-    "E2: ALCORNOCALES":              { "nombre": "Alcornocales (E2)",            "municipio": "Los Barrios", "lat": 36.17538, "lon": -5.48083, "eea": "ES0712A", "aprox": true },
-    "LOS BARRIOS":                   { "nombre": "Los Barrios",                  "municipio": "Los Barrios", "lat": 36.18400, "lon": -5.49500, "aprox": true },
-    "LA LINEA":                      { "nombre": "La Línea",                     "municipio": "La Línea",    "lat": 36.15937, "lon": -5.34836, "eea": "ES1072A", "aprox": false },
-    "E7: EL ZABAL":                  { "nombre": "El Zabal (E7)",                "municipio": "La Línea",    "lat": 36.17315, "lon": -5.34194, "eea": "ES1634A", "aprox": false },
-    "CAMPAMENTO":                    { "nombre": "Campamento",                   "municipio": "San Roque",   "lat": 36.17943, "lon": -5.37697, "eea": "ES0556A", "aprox": false },
-    "PUENTE MAYORGA":                { "nombre": "Puente Mayorga",               "municipio": "San Roque",   "lat": 36.18010, "lon": -5.38250, "eea": "ES1925A", "aprox": false },
-    "GUADARRANQUE":                  { "nombre": "Guadarranque",                 "municipio": "San Roque",   "lat": 36.18210, "lon": -5.41141, "eea": "ES0893A", "aprox": false },
-    "E6: ESTACION DE FFCC S. ROQUE": { "nombre": "Estación FFCC San Roque (E6)", "municipio": "San Roque",   "lat": 36.21204, "lon": -5.43027, "eea": "ES0634A", "aprox": false },
-    "E3: COLEGIO CARTEYA":           { "nombre": "Colegio Carteya (E3)",         "municipio": "San Roque",   "lat": 36.20879, "lon": -5.39138, "eea": "ES1169A", "aprox": false },
-    "E. DE HOSTELERIA":              { "nombre": "Escuela de Hostelería",        "municipio": "San Roque",   "lat": 36.20388, "lon": -5.38371, "eea": "ES1074A", "aprox": false },
-    "ECONOMATO":                     { "nombre": "Economato",                    "municipio": "San Roque",   "lat": 36.18621, "lon": -5.38081, "eea": "ES0557A", "aprox": true },
-    "MADREVIEJA":                    { "nombre": "Madrevieja",                   "municipio": "San Roque",   "lat": 36.20442, "lon": -5.40471, "eea": "ES0894A", "aprox": true }
+    "ALGECIRAS EPS": {
+      "nombre": "Algeciras EPS",
+      "municipio": "Algeciras",
+      "lat": 36.13623,
+      "lon": -5.45343,
+      "eea": "ES1664A",
+      "aprox": false
+    },
+    "E4: RINCONCILLO": {
+      "nombre": "El Rinconcillo (E4)",
+      "municipio": "Algeciras",
+      "lat": 36.1617,
+      "lon": -5.4426,
+      "eea": "ES1637A",
+      "aprox": false
+    },
+    "E5: PALMONES": {
+      "nombre": "Palmones (E5)",
+      "municipio": "Los Barrios",
+      "lat": 36.1747,
+      "lon": -5.43277,
+      "eea": "ES0633A",
+      "aprox": false
+    },
+    "CORTIJILLOS": {
+      "nombre": "Cortijillos",
+      "municipio": "Los Barrios",
+      "lat": 36.19048,
+      "lon": -5.43576,
+      "eea": "ES1076A",
+      "aprox": false
+    },
+    "E1: COLEGIO LOS BARRIOS": {
+      "nombre": "Colegio Los Barrios (E1)",
+      "municipio": "Los Barrios",
+      "lat": 36.18562,
+      "lon": -5.48893,
+      "eea": "ES0629A",
+      "aprox": true
+    },
+    "E2: ALCORNOCALES": {
+      "nombre": "Alcornocales (E2)",
+      "municipio": "Los Barrios",
+      "lat": 36.1905,
+      "lon": -5.483,
+      "aprox": true
+    },
+    "LOS BARRIOS": {
+      "nombre": "Los Barrios",
+      "municipio": "Los Barrios",
+      "lat": 36.17538,
+      "lon": -5.48083,
+      "aprox": false,
+      "eea": "ES0712A"
+    },
+    "LA LINEA": {
+      "nombre": "La Línea",
+      "municipio": "La Línea",
+      "lat": 36.15937,
+      "lon": -5.34836,
+      "eea": "ES1072A",
+      "aprox": false
+    },
+    "E7: EL ZABAL": {
+      "nombre": "El Zabal (E7)",
+      "municipio": "La Línea",
+      "lat": 36.17315,
+      "lon": -5.34194,
+      "eea": "ES1634A",
+      "aprox": false
+    },
+    "CAMPAMENTO": {
+      "nombre": "Campamento",
+      "municipio": "San Roque",
+      "lat": 36.17943,
+      "lon": -5.37697,
+      "eea": "ES0556A",
+      "aprox": false
+    },
+    "PUENTE MAYORGA": {
+      "nombre": "Puente Mayorga",
+      "municipio": "San Roque",
+      "lat": 36.1801,
+      "lon": -5.3825,
+      "eea": "ES1925A",
+      "aprox": false
+    },
+    "GUADARRANQUE": {
+      "nombre": "Guadarranque",
+      "municipio": "San Roque",
+      "lat": 36.1821,
+      "lon": -5.41141,
+      "eea": "ES0893A",
+      "aprox": false
+    },
+    "E6: ESTACION DE FFCC S. ROQUE": {
+      "nombre": "Estación FFCC San Roque (E6)",
+      "municipio": "San Roque",
+      "lat": 36.21204,
+      "lon": -5.43027,
+      "eea": "ES0634A",
+      "aprox": false
+    },
+    "E3: COLEGIO CARTEYA": {
+      "nombre": "Colegio Carteya (E3)",
+      "municipio": "San Roque",
+      "lat": 36.20879,
+      "lon": -5.39138,
+      "eea": "ES1169A",
+      "aprox": false
+    },
+    "E. DE HOSTELERIA": {
+      "nombre": "Escuela de Hostelería",
+      "municipio": "San Roque",
+      "lat": 36.20388,
+      "lon": -5.38371,
+      "eea": "ES1074A",
+      "aprox": false
+    },
+    "ECONOMATO": {
+      "nombre": "Economato",
+      "municipio": "San Roque",
+      "lat": 36.18621,
+      "lon": -5.38081,
+      "eea": "ES0557A",
+      "aprox": true
+    },
+    "MADREVIEJA": {
+      "nombre": "Madrevieja",
+      "municipio": "San Roque",
+      "lat": 36.20442,
+      "lon": -5.40471,
+      "eea": "ES0894A",
+      "aprox": true
+    }
   }
 }
