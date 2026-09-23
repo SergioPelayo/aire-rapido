@@ -1,4 +1,4 @@
-# Aire Rápido · v1.6.0
+# Aire Rápido · v1.7.0
 
 Consulta rápida de las cabinas de calidad del aire del Campo de Gibraltar: lista y mapa con el valor de cada estación, a cualquier hora de cualquier día desde el 25/10/2021, con la tabla numérica hora a hora, gráfica con el valor en cada punto y evolución de 7, 30 o 90 días.
 
@@ -11,6 +11,8 @@ El navegador no puede leer esos ficheros directamente (el servidor de la Junta n
 
 ```
 index.html                       la web completa en un solo archivo (GitHub Pages)
+manifest.webmanifest, sw.js      instalación como app y funcionamiento sin conexión
+icon-*.png, apple-touch-icon.png, favicon.*   iconos
 stations.json                    opcional: corrige nombres y coordenadas sin tocar el código
 scripts/fetch_junta.py           descarga y procesa los CSV
 .github/workflows/actualizar-datos.yml   ejecución horaria y carga histórica
@@ -77,6 +79,7 @@ Datos: Red de Vigilancia y Control de la Calidad del Aire de Andalucía, Conseje
 
 ## Versiones
 
+- **1.7.0** (23/09/2026): instalable como app (PWA). Icono propio en todos los tamaños (Android, iPhone, pestaña del navegador), `manifest.webmanifest`, `sw.js` (v1.0.0) para abrirla sin conexión con los últimos datos, botón **Instalar** en la cabecera e instrucciones para iPhone en la hoja “i”.
 - **1.6.0** (23/09/2026): mapa nuevo con Leaflet. Capas: ortofoto PNOA del IGN con nombres (por defecto), satélite mundial de Esri (cubre también Gibraltar) y callejero de OpenStreetMap; se recuerda la elegida. Pines con el valor y el color del nivel, nombre de la cabina al acercar, ficha rápida al tocar (valores de todos los contaminantes, Ver ficha y Cómo llegar) y tu posición. Si no cargan las imágenes (sin conexión, bloqueo) vuelve solo al esquema de la bahía.
 - **1.5.0** (23/09/2026): líneas de valor límite en las gráficas de partículas (PM10: límite diario legal 50 y límite 2030/OMS 45; PM2.5: límite diario 2030 de 25 y OMS 15). Contador de superaciones por cabina y año: días de PM10 por encima de 50 frente a los 35 permitidos, días por encima de 45 frente a los 18 de 2030, cuántos tienen informe de intrusión africana, barras por mes, lista de días y copia para Excel. La media diaria de partículas se toma del valor de las 24:00 (media de 24 h en los ficheros de la Junta). Descarga desde la VPS (`vps/actualizar.sh`, cron cada hora) porque la Junta no responde a los servidores de GitHub; script v1.4.2 con lectura de las cabeceras reales (`D_PROVINCIA`, `'PM10'`…).
 - **1.4.1** (23/09/2026): fichero `CNAME` para `calidaddelaire.pelayoingenieriadigital.es` y guía de configuración DNS. Sin cambios en la app ni en el script.

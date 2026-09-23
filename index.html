@@ -1,12 +1,20 @@
 <!doctype html>
-<!-- Aire Rápido · index.html · v1.6.0 -->
+<!-- Aire Rápido · index.html · v1.7.0 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B5566">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Aire Rápido">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="application-name" content="Aire Rápido">
+<meta name="description" content="Cabinas de calidad del aire del Campo de Gibraltar: valores por hora, evolución, comparación, polvo africano e informes oficiales.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Aire Rápido · Campo de Gibraltar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -715,6 +723,8 @@ button { cursor:pointer; }
 .logo { width:34px; height:34px; flex:none; }
 .brand h1 { font:700 1.5rem/1 var(--num); margin:0; letter-spacing:-.01em; }
 .brand p { margin:2px 0 0; font-size:.8rem; color:var(--gris); }
+.instalar { margin-left:auto; border:0; background:var(--mar); color:#fff; border-radius:999px; padding:7px 12px; font:600 .85rem var(--num); }
+.instalar + .info { margin-left:6px; }
 .brand .info { margin-left:auto; width:36px; height:36px; border-radius:50%; border:1px solid var(--linea); background:var(--papel); font:700 1rem var(--num); color:var(--mar); }
 
 .dias { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin:0 -14px; padding:0 14px; }
@@ -898,6 +908,7 @@ a.doc { text-decoration:none; font-size:.85rem; margin-left:4px; }
       <h1>Aire Rápido</h1>
       <p id="estado">Cargando…</p>
     </div>
+    <button class="instalar" id="btnInstalar" hidden>Instalar</button>
     <button class="info" id="btnInfo" aria-label="Información, colores e informes oficiales">i</button>
   </div>
   <div class="dias" id="dias" aria-label="Día"></div>
@@ -962,9 +973,9 @@ a.doc { text-decoration:none; font-size:.85rem; margin-left:4px; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
-/* Aire Rápido · app · v1.6.0 */
+/* Aire Rápido · app · v1.7.0 */
 'use strict';
-const VERSION = '1.6.0';
+const VERSION = '1.7.0';
 const PRIMER_DIA = '2021-10-25';
 const POLS = ['SO2','NO2','PM10','PM2.5','O3','CO'];
 const POLS_ICA = ['SO2','NO2','PM10','PM2.5','O3'];
@@ -1817,6 +1828,10 @@ function pintarInfo() {
       <li><a href="${MITECO_METODO}" target="_blank" rel="noopener">Metodología oficial para episodios naturales (PDF)</a><small>Procedimiento España-Portugal para identificar y descontar aportes naturales.</small></li>
     </ul>
     <p class="nota">La predicción diaria es para todo el país: para citar un episodio en un informe, comprueba que el PDF menciona el sur peninsular y, si hay superación, usa el informe anual validado.</p></div>`;
+  h += `<div class="bloque" id="infoInstalar"><h3>Instalar en el móvil</h3>
+    <p class="small"><b>Android (Chrome):</b> pulsa el botón <b>Instalar</b> de arriba, o menú ⋮ > <b>Instalar aplicación</b>.</p>
+    <p class="small"><b>iPhone (Safari):</b> botón <b>Compartir</b> (el cuadrado con la flecha) > <b>Añadir a pantalla de inicio</b>. En iPhone solo funciona desde Safari.</p>
+    <p class="small">Una vez instalada se abre a pantalla completa, con su icono, y muestra los últimos datos descargados aunque no haya cobertura.</p></div>`;
   h += `<div class="bloque"><h3>De dónde salen los datos</h3><p class="small">Ficheros horarios que publica cada día la Junta de Andalucía para la provincia de Cádiz, desde el 25/10/2021. Son datos sin validar y pueden cambiar respecto a los informes oficiales. Las horas van de 01:00 a 24:00, como en los ficheros de la Junta.</p>
     <p class="small">${S.demo ? '<b>Ahora mismo estás viendo datos de demostración.</b>' : 'Datos reales descargados automáticamente cada hora.'}</p><p class="small">Aire Rápido, versión ${VERSION}.</p></div>`;
   $('infoCuerpo').innerHTML = h;
@@ -1891,7 +1906,25 @@ function eventos() {
 }
 
 /* ---------- arranque ---------- */
+/* ---------- instalación como app ---------- */
+let avisoInstalar = null;
+const esStandalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const esIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function prepararInstalacion() {
+  if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude\.ai$|claudeusercontent/.test(location.hostname)) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); avisoInstalar = e; $('btnInstalar').hidden = false; });
+  window.addEventListener('appinstalled', () => { avisoInstalar = null; $('btnInstalar').hidden = true; });
+  if (esIOS() && !esStandalone()) $('btnInstalar').hidden = false;
+  $('btnInstalar').onclick = async () => {
+    if (avisoInstalar) { avisoInstalar.prompt(); await avisoInstalar.userChoice; avisoInstalar = null; $('btnInstalar').hidden = true; return; }
+    pintarInfo(); $('info').showModal(); setTimeout(() => $('infoInstalar')?.scrollIntoView({ block:'start' }), 60);
+  };
+}
+
 (async function init() {
+  prepararInstalacion();
   $('ver').textContent = VERSION;
   for (const [k,v] of Object.entries(CATALOGO)) S.cat[norm(k)] = v;
   S.comp = leer('comp', ['E5: PALMONES','E4: RINCONCILLO','ALGECIRAS EPS','LA LINEA']);
