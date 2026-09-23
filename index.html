@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Aire Rápido · index.html · v1.4.0 -->
+<!-- Aire Rápido · index.html · v1.5.0 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -273,14 +273,28 @@ a.doc { text-decoration:none; font-size:.85rem; margin-left:4px; }
 </dialog>
 
 <script>
-/* Aire Rápido · app · v1.4.0 */
+/* Aire Rápido · app · v1.5.0 */
 'use strict';
-const VERSION = '1.4.0';
+const VERSION = '1.5.0';
 const PRIMER_DIA = '2021-10-25';
 const POLS = ['SO2','NO2','PM10','PM2.5','O3','CO'];
 const POLS_ICA = ['SO2','NO2','PM10','PM2.5','O3'];
 const UNIDAD = { CO:'mg/m³' };
 const BANDAS = { SO2:[100,200,350,500,750], NO2:[40,90,120,230,340], PM10:[20,40,50,100,150], 'PM2.5':[10,20,25,50,75], O3:[50,100,130,240,380] };
+/* Valores límite y guías para partículas (media diaria, µg/m³) */
+const LIMITES = {
+  PM10: [{ v:50, et:'Límite diario legal 50', col:'#B3261E' }, { v:45, et:'Límite 2030 y OMS 45', col:'#9A5B00' }],
+  'PM2.5': [{ v:25, et:'Límite diario 2030: 25', col:'#B3261E' }, { v:15, et:'OMS 15', col:'#9A5B00' }],
+};
+const maxLimite = (pol) => Math.max(0, ...(LIMITES[pol] || []).map((l) => l.v));
+function lineasLimite(pol, x1, x2, y, etiquetasX) {
+  let s = '';
+  for (const l of LIMITES[pol] || []) {
+    s += `<line x1="${x1}" x2="${x2}" y1="${y(l.v)}" y2="${y(l.v)}" stroke="${l.col}" stroke-width="1.8"/>`;
+    for (const ex of etiquetasX) s += `<text x="${ex}" y="${y(l.v)-4}" font-size="10" font-weight="700" fill="${l.col}" stroke="var(--papel)" stroke-width="3" paint-order="stroke">${l.et}</text>`;
+  }
+  return s;
+}
 const NIVELES = ['Buena','Razonablemente buena','Regular','Desfavorable','Muy desfavorable','Extremadamente desfavorable'];
 const COLOR = ['#50F0E6','#50CCAA','#F0E641','#FF5050','#960032','#7D2181'];
 const COLOR_TXT = ['#06313A','#06313A','#3A3300','#FFFFFF','#FFFFFF','#FFFFFF'];
@@ -309,7 +323,7 @@ const CATALOGO = {
 const COSTA = [[-5.2967,36.2459],[-5.3059,36.2433],[-5.3177,36.228],[-5.3339,36.1819],[-5.3319,36.1804],[-5.3317,36.1789],[-5.3343,36.182],[-5.3359,36.1797],[-5.333,36.18],[-5.3445,36.1095],[-5.3502,36.1109],[-5.3525,36.1224],[-5.3542,36.1223],[-5.3644,36.1338],[-5.3566,36.1261],[-5.3541,36.1277],[-5.3611,36.1482],[-5.363,36.1451],[-5.3655,36.1482],[-5.366,36.1441],[-5.366,36.1485],[-5.3653,36.1493],[-5.3543,36.1467],[-5.3532,36.1504],[-5.3599,36.1515],[-5.351,36.1519],[-5.3545,36.1524],[-5.3519,36.1551],[-5.3651,36.1551],[-5.3675,36.1571],[-5.3533,36.1569],[-5.3551,36.1598],[-5.3586,36.1585],[-5.3566,36.1612],[-5.3613,36.1591],[-5.358,36.1609],[-5.3598,36.1641],[-5.3706,36.1694],[-5.3743,36.1638],[-5.3821,36.1694],[-5.3774,36.1705],[-5.3818,36.1727],[-5.3774,36.1736],[-5.3835,36.1744],[-5.3799,36.1746],[-5.3818,36.1785],[-5.3905,36.1808],[-5.415,36.1802],[-5.4162,36.1745],[-5.4199,36.1732],[-5.4167,36.1745],[-5.4195,36.1786],[-5.4181,36.1753],[-5.4257,36.1764],[-5.4301,36.1726],[-5.441,36.1764],[-5.4446,36.1762],[-5.4438,36.1696],[-5.4383,36.1707],[-5.4427,36.1703],[-5.4419,36.176],[-5.4344,36.1728],[-5.4354,36.1713],[-5.4316,36.172],[-5.4446,36.1543],[-5.4473,36.1387],[-5.4435,36.1377],[-5.4442,36.1305],[-5.4417,36.1476],[-5.4356,36.1483],[-5.4362,36.1349],[-5.4396,36.1328],[-5.4363,36.131],[-5.4435,36.1272],[-5.4317,36.1284],[-5.4302,36.1437],[-5.4282,36.1477],[-5.4301,36.1333],[-5.4228,36.1328],[-5.4223,36.1199],[-5.4369,36.1188],[-5.436,36.1228],[-5.4429,36.1184],[-5.4352,36.1187],[-5.4376,36.1124],[-5.4316,36.1081],[-5.4315,36.1052],[-5.4402,36.1028],[-5.4434,36.0895],[-5.4406,36.086],[-5.4268,36.0831],[-5.4257,36.077],[-5.4305,36.0712],[-5.4436,36.0648],[-5.4492,36.0568],[-5.4645,36.0503],[-5.486,36.0545],[-5.5167,36.0374],[-5.5388,36.0315],[-5.5422,36.03],[-5.56,36.03],[-5.56,36.27],[-5.2848,36.27],[-5.2967,36.2459]];
 const PUEBLOS = [['Algeciras',-5.462,36.128],['Los Barrios',-5.498,36.196],['San Roque',-5.378,36.214],['La Línea',-5.335,36.172],['Gibraltar',-5.338,36.132],['Bahía de Algeciras',-5.405,36.130]];
 
-const S = { cat:{}, demo:false, latest:null, fecha:null, hora:0, pol:'ICA', vista:'lista', pos:null, dias:new Map(), det:null, detPol:'PM10', detPolVista:null, evo:'h48', vb:null, comp:[], compEvo:'h48', compFirma:null, compTexto:'', miteco:{} };
+const S = { cat:{}, demo:false, latest:null, fecha:null, hora:0, pol:'ICA', vista:'lista', pos:null, dias:new Map(), det:null, detPol:'PM10', detPolVista:null, evo:'h48', vb:null, comp:[], compEvo:'h48', compFirma:null, compTexto:'', miteco:{}, supAno:null, supTexto:'' };
 const $ = (id) => document.getElementById(id);
 
 /* ---------- utilidades ---------- */
@@ -589,12 +603,13 @@ function grafica(puntos, pol, titulo, polvo) {
   const W = Math.round(Math.max(330, Math.min(720, window.innerWidth - 56))), H = W < 500 ? 230 : 270, m = { t:30, r:10, b:28, l:10 };
   const vals = puntos.map((p) => p.v).filter((v) => v != null);
   if (!vals.length) return '<p class="small">Sin datos para representar.</p>';
-  const maxV = Math.max(...vals)*1.2 || 1;
+  const maxV = Math.max(...vals, maxLimite(pol))*1.15 || 1;
   const x = (i) => m.l + (puntos.length === 1 ? (W-m.l-m.r)/2 : i*(W-m.l-m.r)/(puntos.length-1));
   const y = (v) => H - m.b - (v/maxV)*(H-m.t-m.b);
   let s = `<svg class="graf" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(titulo)}">`;
   for (const [i,u] of (BANDAS[pol] || []).entries()) { if (u > maxV) break;
     s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(u)}" y2="${y(u)}" stroke="${COLOR[i+1]}" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${W-m.r}" y="${y(u)-3}" text-anchor="end" font-size="10" fill="var(--gris)">${u}</text>`; }
+  s += lineasLimite(pol, m.l, W-m.r, y, [m.l+4]);
   if (polvo) { const pw = puntos.length > 1 ? (W-m.l-m.r)/(puntos.length-1) : 20;
     polvo.forEach((v,i) => { const n = nivPolvo(v); if (n >= 1) s += `<rect x="${x(i)-pw/2}" y="${m.t-6}" width="${pw}" height="${H-m.b-m.t+6}" fill="${POLVO_COL[n]}" opacity=".55"/>`; }); }
   s += `<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" stroke="var(--linea)"/>`;
@@ -643,7 +658,8 @@ function pintarDetalle() {
   const polDet = disp.includes(S.detPol) ? S.detPol : (disp.includes('PM10') ? 'PM10' : disp[0]);
   S.detPolVista = polDet;
   const serie = e.h[polDet], val = serie.map((v,j) => ({v,j})).filter((o) => o.v != null);
-  const media = val.length ? val.reduce((a,o) => a+o.v, 0)/val.length : null;
+  const esPM = polDet === 'PM10' || polDet === 'PM2.5';
+  const media = esPM ? mediaDiaria(serie) : (val.length ? val.reduce((a,o) => a+o.v, 0)/val.length : null);
   const max = val.reduce((a,o) => !a || o.v > a.v ? o : a, null);
 
   h += `<div class="bloque"><h3>Ahora mismo a las ${fmtHora(S.hora)}</h3><div class="tiles" style="padding:0">${htmlTiles(e, S.hora)}</div></div>`;
@@ -652,7 +668,7 @@ function pintarDetalle() {
     <h3>${polDet} hora a hora</h3>
     <div class="resumen">
       <div><b>${fmtV(serie[S.hora])}</b>a las ${fmtHora(S.hora)}</div>
-      <div><b>${fmtV(media)}</b>media del día</div>
+      <div><b style="color:${esPM && media != null && media > (polDet === 'PM10' ? 50 : 25) ? '#B3261E' : 'var(--tinta)'}">${fmtV(media)}</b>${esPM ? 'media diaria (24 h)' : 'media del día'}</div>
       <div><b>${max ? fmtV(max.v) : '–'}</b>máximo${max ? ', '+fmtHora(max.j) : ''}</div>
       <div><b>${val.length}/24</b>horas con dato</div>
     </div>
@@ -660,6 +676,16 @@ function pintarDetalle() {
     ${textoPolvoDia(S.dias.get(S.fecha))}
   </div>`;
   if (informeOficial(S.fecha)) h += htmlOficial(S.fecha, false);
+
+  const polSup = disp.includes('PM10') ? 'PM10' : (disp.includes('PM2.5') ? 'PM2.5' : null);
+  if (polSup) {
+    const y0 = +S.fecha.slice(0,4), anos = []; for (let a = y0; a >= 2021; a--) anos.push(a);
+    if (!anos.includes(S.supAno)) S.supAno = y0;
+    h += `<div class="bloque"><h3>Superaciones del valor límite diario</h3>
+      <div class="evo-sel" style="margin:0 0 10px;padding:0">${anos.map((a) => `<button class="chip" data-supy="${a}" aria-pressed="${a === S.supAno}">${a}</button>`).join('')}</div>
+      <div id="sup"><button class="boton pri" data-sup="1">Calcular superaciones de ${S.supAno}</button>
+      <p class="nota">Cuenta los días del año con media diaria por encima del límite en esta cabina${S.supAno === y0 ? ', hasta el ' + fmtFecha(S.fecha) : ''}, y cuáles tienen informe de intrusión africana del Ministerio.</p></div></div>`;
+  }
 
   h += `<div class="bloque"><h3>Evolución de ${polDet}</h3>
     <div class="evo-sel">${EVO.map((o) => `<button class="chip" data-evo="${o.id}" aria-pressed="${S.evo === o.id}">${o.et}</button>`).join('')}</div>
@@ -735,12 +761,13 @@ function graficaSeries(eje, series, pol, polvo) {
   const W = m.l + m.r + Math.max(1, eje.length-1)*paso;
   const vals = series.flatMap((s) => s.vals).filter((v) => v != null);
   if (!vals.length) return '<p class="small">Sin datos en este periodo.</p>';
-  const maxV = Math.max(...vals)*1.18 || 1;
+  const maxV = Math.max(...vals, maxLimite(pol))*1.15 || 1;
   const x = (i) => m.l + i*paso, y = (v) => H - m.b - (v/maxV)*(H-m.t-m.b);
   let s = `<svg viewBox="0 0 ${W} ${H+HP}" width="${W}" height="${H+HP}" role="img" aria-label="Evolución horaria de ${esc(pol)}">`;
   if (hayPolvo) polvo.forEach((v,i) => { const n = nivPolvo(v); if (n >= 1) s += `<rect x="${x(i)-paso/2}" y="${m.t-8}" width="${paso}" height="${H-m.b-m.t+8}" fill="${POLVO_COL[n]}" opacity=".5"/>`; });
   const umbrales = (BANDAS[pol] || []).map((u,i) => ({ u, i })).filter((o) => o.u <= maxV);
   for (const { u, i } of umbrales) s += `<line x1="${m.l}" x2="${W-m.r}" y1="${y(u)}" y2="${y(u)}" stroke="${COLOR[i+1]}" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${W-m.r+3}" y="${y(u)+3.5}" font-size="9.5" fill="var(--gris)">${u}</text>`;
+  s += lineasLimite(pol, m.l, W-m.r, y, eje.map((p,i) => (p.i === 0 || i === 0) ? x(i)-paso/2+60 : null).filter((v) => v != null));
   s += `<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" stroke="var(--linea)"/>`;
   eje.forEach((p,i) => {
     if (p.i !== 0 && i !== 0) return;
@@ -834,6 +861,79 @@ async function pintarEvo(modo) {
       <td class="c"><span style="background:${r.x == null ? 'transparent' : bg(b)};color:${fg(b)}">${fmtV(r.x)}</span></td><td>${r.n}</td></tr>`; }
   cont.innerHTML = h + '</tbody></table></div>';
 }
+/* ---------- superaciones del valor límite diario de partículas ---------- */
+function mediaDiaria(s) {
+  if (!s) return null;
+  if (s[23] != null) return s[23];               // la Junta publica medias móviles de 24 h: a las 24:00 es la media del día
+  const vs = s.filter((v) => v != null);
+  return vs.length >= 18 ? vs.reduce((a,b) => a+b,0)/vs.length : null;
+}
+async function cargarVarios(fechas, alAvanzar) {
+  const out = new Array(fechas.length); let i = 0, hechos = 0;
+  const trabajador = async () => { while (i < fechas.length) { const j = i++; out[j] = await cargarDia(fechas[j]); hechos++; if (hechos % 20 === 0) alAvanzar(hechos); } };
+  await Promise.all(Array.from({ length:12 }, trabajador));
+  return out;
+}
+function barrasMes(conteos, tope, color) {
+  const W = Math.round(Math.max(330, Math.min(720, window.innerWidth - 56))), H = 170, m = { t:22, r:6, b:24, l:6 };
+  const mx = Math.max(1, ...conteos), bw = (W-m.l-m.r)/12;
+  let s = `<svg class="graf" viewBox="0 0 ${W} ${H}" role="img" aria-label="Días de superación por mes">`;
+  conteos.forEach((c,i) => {
+    const hh = c/mx*(H-m.t-m.b), x = m.l + i*bw;
+    s += `<rect x="${x+bw*0.18}" y="${H-m.b-hh}" width="${bw*0.64}" height="${Math.max(hh, 1)}" rx="3" fill="${c ? color : 'var(--linea)'}"/>`;
+    s += `<text x="${x+bw/2}" y="${H-m.b-hh-5}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tinta)" style="font-family:var(--num)">${c}</text>`;
+    s += `<text x="${x+bw/2}" y="${H-m.b+16}" text-anchor="middle" font-size="10.5" fill="var(--gris)">${MESES_ES[i].slice(0,3)}</text>`;
+  });
+  return s + '</svg>';
+}
+async function pintarSuperaciones() {
+  const cont = $('sup'); if (!cont) return;
+  const k = S.det, ano = S.supAno;
+  const e0 = S.dias.get(S.fecha)?.estaciones[k];
+  const disp = e0 ? POLS.filter((p) => e0.h[p]) : [];
+  const ini = `${ano}-01-01` < PRIMER_DIA ? PRIMER_DIA : `${ano}-01-01`;
+  const finAno = `${ano}-12-31`, fin = finAno < S.fecha ? finAno : S.fecha;
+  const fechas = []; for (let f = ini; f <= fin; f = sumaDias(f, 1)) fechas.push(f);
+  cont.innerHTML = `<p class="small">Cargando ${fechas.length} días…</p>`;
+  const dias = await cargarVarios(fechas, (n) => { if ($('sup') === cont) cont.innerHTML = `<p class="small">Cargando ${n} de ${fechas.length} días…</p>`; });
+  if ($('sup') !== cont || S.det !== k || S.supAno !== ano) return;
+  const serie = (d, pol) => d?.estaciones[k]?.h[pol] || null;
+  const res = {};
+  for (const pol of ['PM10','PM2.5'].filter((p) => disp.includes(p))) {
+    const lim = pol === 'PM10' ? 50 : 25;
+    const filas = fechas.map((f,i) => ({ f, v: mediaDiaria(serie(dias[i], pol)) }));
+    const conDato = filas.filter((r) => r.v != null);
+    const sup = conDato.filter((r) => r.v > lim);
+    res[pol] = { lim, conDato:conDato.length, sup, sup45: pol === 'PM10' ? conDato.filter((r) => r.v > 45).length : null,
+      oficial: sup.filter((r) => informeOficial(r.f)).length,
+      meses: Array.from({ length:12 }, (_,m) => sup.filter((r) => +r.f.slice(5,7) === m+1).length) };
+  }
+  let h = '';
+  const r10 = res.PM10;
+  if (r10) {
+    const pct = Math.min(100, r10.sup.length/35*100), rojo = r10.sup.length > 35;
+    h += `<div class="resumen" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+      <div><b style="color:${rojo ? '#B3261E' : 'var(--tinta)'}">${r10.sup.length} / 35</b>días PM10 &gt; 50 (máx. legal)</div>
+      <div><b>${r10.oficial}</b>de ellos con informe de intrusión africana</div>
+      <div><b style="color:${r10.sup45 > 18 ? '#B3261E' : 'var(--tinta)'}">${r10.sup45} / 18</b>días &gt; 45 (límite 2030)</div></div>
+      <div style="height:10px;border-radius:5px;background:var(--linea);overflow:hidden;margin:4px 0 10px"><div style="height:100%;width:${pct}%;background:${rojo ? '#B3261E' : pct > 70 ? '#E09F3E' : '#50CCAA'}"></div></div>
+      <h3 style="margin-top:6px">Días de superación por mes, PM10</h3>${barrasMes(r10.meses, 35, '#FF5050')}`;
+  }
+  const r25 = res['PM2.5'];
+  if (r25) h += `<p class="frase"><b>PM2.5:</b> ${r25.sup.length} días con media diaria &gt; 25 µg/m³ (límite diario desde 2030, máximo 18 al año), sobre ${r25.conDato} días con dato.</p>`;
+  const principal = r10 || r25;
+  if (principal && principal.sup.length) {
+    const pol = r10 ? 'PM10' : 'PM2.5';
+    h += `<h3 style="margin-top:14px">Días por encima de ${principal.lim} µg/m³ (${pol})</h3><div class="tabla"><table><thead><tr><th>Día</th><th>Media diaria</th><th>Informe</th></tr></thead><tbody>`;
+    for (const r of [...principal.sup].reverse()) { const n = nivel(pol, r.v);
+      h += `<tr><td><a href="#" data-ir="${r.f}">${diaSem(r.f)} ${fmtFecha(r.f)}</a></td><td class="c"><span style="background:${bg(n)};color:${fg(n)}">${fmtV(r.v)}</span></td><td>${informeOficial(r.f) ? `<a href="${esc(informeOficial(r.f).pdf)}" target="_blank" rel="noopener">📄 PDF</a>` : '–'}</td></tr>`; }
+    h += `</tbody></table></div><div class="fila-bot" style="margin-top:10px"><button class="boton" id="copiarSup">Copiar para Excel</button></div>`;
+    S.supTexto = [['Estación','Día',`${pol} media diaria (µg/m³)`,'Informe MITECO'].join('\t'), ...principal.sup.map((r) => [info(k).nombre, fmtFecha(r.f), String(Math.round(r.v*10)/10).replace('.',','), informeOficial(r.f)?.pdf || ''].join('\t'))].join('\r\n');
+  } else if (principal) h += '<p class="frase">Ningún día por encima del valor límite en este periodo.</p>';
+  if (principal) h += `<p class="nota">Días con dato: ${principal.conDato} de ${fechas.length}. Media diaria = valor de las 24:00, que en los ficheros de la Junta es la media de 24 h (si falta, media de al menos 18 horas). Datos sin validar: el recuento oficial es el de la evaluación anual. Los días con informe de intrusión solo se descuentan si lo confirma el informe anual de episodios naturales.</p>`;
+  cont.innerHTML = h;
+}
+
 function tablaTexto(sep) {
   const e = S.dias.get(S.fecha)?.estaciones[S.det]; if (!e) return '';
   const disp = POLS.filter((p) => e.h[p]);
@@ -938,7 +1038,7 @@ function pintarInfo() {
   let h = `<div class="bloque"><h3>Niveles</h3><div class="escala">${NIVELES.map((n,i) => `<div><i style="background:${COLOR[i]}"></i>${n}</div>`).join('')}</div></div>`;
   h += `<div class="bloque"><h3>Límites de cada nivel (µg/m³)</h3><div class="tabla"><table><thead><tr><th>Nivel</th>${POLS_ICA.map((p) => `<th>${p}</th>`).join('')}</tr></thead><tbody>`;
   NIVELES.forEach((n,i) => { h += `<tr><td><span class="pill" style="background:${COLOR[i]};color:${COLOR_TXT[i]}">${n}</span></td>${POLS_ICA.map((p) => { const b = BANDAS[p]; return `<td>${i === 0 ? '0' : b[i-1]}${i < 5 ? '–'+b[i] : '+'}</td>`; }).join('')}</tr>`; });
-  h += `</tbody></table></div><p class="small">El índice oficial usa medias de 24 horas para PM10 y PM2.5. Aquí se aplican al valor horario, así que para partículas el color es orientativo. El CO no forma parte del índice.</p></div>`;
+  h += `</tbody></table></div><p class="small"><b>Líneas rojas y ocres en las gráficas de partículas:</b> valor límite diario legal de PM10 (50 µg/m³, máximo 35 superaciones al año), límite de 2030 y guía de la OMS (45), límite diario de PM2.5 desde 2030 (25, máximo 18) y guía OMS de PM2.5 (15).</p><p class="small">El índice oficial usa medias de 24 horas para PM10 y PM2.5, que es lo que publica la Junta en esas columnas (medias móviles de 24 h). El CO no forma parte del índice.</p></div>`;
   h += `<div class="bloque" id="infoPolvo"><h3>Polvo africano (intrusiones saharianas)</h3>
     <p class="small">La app muestra el polvo mineral en superficie que estima el modelo CAMS de Copernicus para la Bahía de Algeciras, hora a hora. Es una estimación de modelo, no una medida de las cabinas, y sirve para señalar horas en las que el PM10 puede estar inflado por polvo del Sáhara.</p>
     <div class="escala">${POLVO_NOM.map((n,i) => `<div><i style="background:${i ? POLVO_COL[i] : 'var(--fondo)'};border:1px solid var(--linea)"></i>${n}: ${['menos de 10','10 a 25','25 a 50','50 o más'][i]} µg/m³</div>`).join('')}</div>
@@ -1011,6 +1111,9 @@ function eventos() {
   $('detCuerpo').onclick = async (e) => {
     const t = e.target, q = (s) => t.closest(s);
     if (q('[data-dp]')) { S.detPol = q('[data-dp]').dataset.dp; guardar('detPol', S.detPol); pintarDetalle(); return; }
+    if (q('[data-supy]')) { S.supAno = +q('[data-supy]').dataset.supy; document.querySelectorAll('[data-supy]').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.supy === S.supAno)); pintarSuperaciones(); return; }
+    if (q('[data-sup]')) { pintarSuperaciones(); return; }
+    if (t.id === 'copiarSup') { try { await navigator.clipboard.writeText(S.supTexto || ''); t.textContent = 'Copiada'; } catch { t.textContent = 'No se pudo copiar'; } setTimeout(() => t.textContent = 'Copiar para Excel', 1800); return; }
     if (q('[data-dia]')) { await irA(sumaDias(S.fecha, +q('[data-dia]').dataset.dia)); return; }
     if (q('[data-evo]')) { pintarEvo(q('[data-evo]').dataset.evo); return; }
     if (q('[data-ir]')) { e.preventDefault(); await irA(q('[data-ir]').dataset.ir, { ultima:false }); return; }

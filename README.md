@@ -1,4 +1,4 @@
-# Aire Rápido · v1.4.1
+# Aire Rápido · v1.5.0
 
 Consulta rápida de las cabinas de calidad del aire del Campo de Gibraltar: lista y mapa con el valor de cada estación, a cualquier hora de cualquier día desde el 25/10/2021, con la tabla numérica hora a hora, gráfica con el valor en cada punto y evolución de 7, 30 o 90 días.
 
@@ -77,6 +77,7 @@ Datos: Red de Vigilancia y Control de la Calidad del Aire de Andalucía, Conseje
 
 ## Versiones
 
+- **1.5.0** (23/09/2026): líneas de valor límite en las gráficas de partículas (PM10: límite diario legal 50 y límite 2030/OMS 45; PM2.5: límite diario 2030 de 25 y OMS 15). Contador de superaciones por cabina y año: días de PM10 por encima de 50 frente a los 35 permitidos, días por encima de 45 frente a los 18 de 2030, cuántos tienen informe de intrusión africana, barras por mes, lista de días y copia para Excel. La media diaria de partículas se toma del valor de las 24:00 (media de 24 h en los ficheros de la Junta). Descarga desde la VPS (`vps/actualizar.sh`, cron cada hora) porque la Junta no responde a los servidores de GitHub; script v1.4.2 con lectura de las cabeceras reales (`D_PROVINCIA`, `'PM10'`…).
 - **1.4.1** (23/09/2026): fichero `CNAME` para `calidaddelaire.pelayoingenieriadigital.es` y guía de configuración DNS. Sin cambios en la app ni en el script.
 - **1.4.0** (23/09/2026): enlaces a los informes oficiales del Ministerio sobre intrusiones de aire africano. Aviso con el PDF del día en la lista y en la ficha, icono 📄 en las tablas de evolución, listado de informes del periodo en Comparar (y columna en la copia para Excel), y en la hoja “i” los enlaces a las predicciones del mes, a los informes anuales validados, al informe de episodios naturales 2024 y a la metodología oficial. El script (v1.4.0) mantiene `data/miteco_intrusiones.json`. La app trae de serie los informes reales de agosto y septiembre de 2026.
 - **1.3.0** (23/09/2026): pestaña Comparar (2 a 6 cabinas superpuestas por horas con etiqueta en cada dato, coeficiente de similitud r entre cabinas y frente al polvo, tabla por horas y copiar para Excel). Polvo africano estimado (modelo CAMS vía Open-Meteo) guardado cada hora junto a los datos: aviso en la lista, franjas color arena en las gráficas, barras de polvo bajo la evolución y enlace a las predicciones oficiales del Ministerio. Script de descarga v1.3.0.
