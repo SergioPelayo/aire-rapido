@@ -1,4 +1,4 @@
-# Aire Rápido · v1.8.0
+# Aire Rápido · v1.9.0
 
 Consulta rápida de las cabinas de calidad del aire del Campo de Gibraltar: lista y mapa con el valor de cada estación, a cualquier hora de cualquier día desde el 25/10/2021, con la tabla numérica hora a hora, gráfica con el valor en cada punto y evolución de 7, 30 o 90 días.
 
@@ -83,6 +83,7 @@ Datos: Red de Vigilancia y Control de la Calidad del Aire de Andalucía, Conseje
 
 ## Versiones
 
+- **1.9.0** (23/09/2026): estado de las actualizaciones visible en la app. Bajo el título aparece hasta qué día hay datos y cuándo comprobó la VPS por última vez, con un punto verde, ámbar o rojo; al tocarlo se abre el detalle (último día de la Junta, última comprobación horaria, última descarga de la EEA, informes del Ministerio). Los scripts de la VPS (`actualizar.sh` y `eea.sh` v1.1.0, `estado.sh` v1.0.0) guardan cada ejecución en `data/estado.json`.
 - **1.8.0** (23/09/2026): datos complementarios de la Agencia Europea de Medio Ambiente (EEA) para los contaminantes que la Junta no publica en una cabina (PM10 de Palmones, Colegio Los Barrios y El Zabal; CO de Algeciras EPS, Campamento, Cortijillos, Escuela de Hostelería y Guadarranque; huecos puntuales del resto). Se marcan con la etiqueta EEA en la app y su media diaria de partículas se calcula como promedio horario. Script `scripts/eea_fetch.py` (v1.0.0) y `vps/eea.sh` (cron diario a las 7:40).
 - **1.7.0** (23/09/2026): instalable como app (PWA). Icono propio en todos los tamaños (Android, iPhone, pestaña del navegador), `manifest.webmanifest`, `sw.js` (v1.0.0) para abrirla sin conexión con los últimos datos, botón **Instalar** en la cabecera e instrucciones para iPhone en la hoja “i”.
 - **1.6.0** (23/09/2026): mapa nuevo con Leaflet. Capas: ortofoto PNOA del IGN con nombres (por defecto), satélite mundial de Esri (cubre también Gibraltar) y callejero de OpenStreetMap; se recuerda la elegida. Pines con el valor y el color del nivel, nombre de la cabina al acercar, ficha rápida al tocar (valores de todos los contaminantes, Ver ficha y Cómo llegar) y tu posición. Si no cargan las imágenes (sin conexión, bloqueo) vuelve solo al esquema de la bahía.

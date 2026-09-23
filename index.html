@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Aire Rápido · index.html · v1.8.0 -->
+<!-- Aire Rápido · index.html · v1.9.0 -->
 <html lang="es">
 <head>
 <meta charset="utf-8">
@@ -723,6 +723,10 @@ button { cursor:pointer; }
 .logo { width:34px; height:34px; flex:none; }
 .brand h1 { font:700 1.5rem/1 var(--num); margin:0; letter-spacing:-.01em; }
 .brand p { margin:2px 0 0; font-size:.8rem; color:var(--gris); }
+#estado { cursor:pointer; }
+.salud { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:1px; }
+.estado-tabla td { text-align:left; white-space:normal; padding:6px 4px; vertical-align:top; }
+.estado-tabla td:first-child { color:var(--gris); width:46%; }
 .instalar { margin-left:auto; border:0; background:var(--mar); color:#fff; border-radius:999px; padding:7px 12px; font:600 .85rem var(--num); }
 .instalar + .info { margin-left:6px; }
 .brand .info { margin-left:auto; width:36px; height:36px; border-radius:50%; border:1px solid var(--linea); background:var(--papel); font:700 1rem var(--num); color:var(--mar); }
@@ -974,9 +978,9 @@ a.doc { text-decoration:none; font-size:.85rem; margin-left:4px; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
-/* Aire Rápido · app · v1.8.0 */
+/* Aire Rápido · app · v1.9.0 */
 'use strict';
-const VERSION = '1.8.0';
+const VERSION = '1.9.0';
 const PRIMER_DIA = '2021-10-25';
 const POLS = ['SO2','NO2','PM10','PM2.5','O3','CO'];
 const POLS_ICA = ['SO2','NO2','PM10','PM2.5','O3'];
@@ -1024,7 +1028,7 @@ const CATALOGO = {
 const COSTA = [[-5.2967,36.2459],[-5.3059,36.2433],[-5.3177,36.228],[-5.3339,36.1819],[-5.3319,36.1804],[-5.3317,36.1789],[-5.3343,36.182],[-5.3359,36.1797],[-5.333,36.18],[-5.3445,36.1095],[-5.3502,36.1109],[-5.3525,36.1224],[-5.3542,36.1223],[-5.3644,36.1338],[-5.3566,36.1261],[-5.3541,36.1277],[-5.3611,36.1482],[-5.363,36.1451],[-5.3655,36.1482],[-5.366,36.1441],[-5.366,36.1485],[-5.3653,36.1493],[-5.3543,36.1467],[-5.3532,36.1504],[-5.3599,36.1515],[-5.351,36.1519],[-5.3545,36.1524],[-5.3519,36.1551],[-5.3651,36.1551],[-5.3675,36.1571],[-5.3533,36.1569],[-5.3551,36.1598],[-5.3586,36.1585],[-5.3566,36.1612],[-5.3613,36.1591],[-5.358,36.1609],[-5.3598,36.1641],[-5.3706,36.1694],[-5.3743,36.1638],[-5.3821,36.1694],[-5.3774,36.1705],[-5.3818,36.1727],[-5.3774,36.1736],[-5.3835,36.1744],[-5.3799,36.1746],[-5.3818,36.1785],[-5.3905,36.1808],[-5.415,36.1802],[-5.4162,36.1745],[-5.4199,36.1732],[-5.4167,36.1745],[-5.4195,36.1786],[-5.4181,36.1753],[-5.4257,36.1764],[-5.4301,36.1726],[-5.441,36.1764],[-5.4446,36.1762],[-5.4438,36.1696],[-5.4383,36.1707],[-5.4427,36.1703],[-5.4419,36.176],[-5.4344,36.1728],[-5.4354,36.1713],[-5.4316,36.172],[-5.4446,36.1543],[-5.4473,36.1387],[-5.4435,36.1377],[-5.4442,36.1305],[-5.4417,36.1476],[-5.4356,36.1483],[-5.4362,36.1349],[-5.4396,36.1328],[-5.4363,36.131],[-5.4435,36.1272],[-5.4317,36.1284],[-5.4302,36.1437],[-5.4282,36.1477],[-5.4301,36.1333],[-5.4228,36.1328],[-5.4223,36.1199],[-5.4369,36.1188],[-5.436,36.1228],[-5.4429,36.1184],[-5.4352,36.1187],[-5.4376,36.1124],[-5.4316,36.1081],[-5.4315,36.1052],[-5.4402,36.1028],[-5.4434,36.0895],[-5.4406,36.086],[-5.4268,36.0831],[-5.4257,36.077],[-5.4305,36.0712],[-5.4436,36.0648],[-5.4492,36.0568],[-5.4645,36.0503],[-5.486,36.0545],[-5.5167,36.0374],[-5.5388,36.0315],[-5.5422,36.03],[-5.56,36.03],[-5.56,36.27],[-5.2848,36.27],[-5.2967,36.2459]];
 const PUEBLOS = [['Algeciras',-5.462,36.128],['Los Barrios',-5.498,36.196],['San Roque',-5.378,36.214],['La Línea',-5.335,36.172],['Gibraltar',-5.338,36.132],['Bahía de Algeciras',-5.405,36.130]];
 
-const S = { cat:{}, demo:false, latest:null, fecha:null, hora:0, pol:'ICA', vista:'lista', pos:null, dias:new Map(), det:null, detPol:'PM10', detPolVista:null, evo:'h48', vb:null, comp:[], compEvo:'h48', compFirma:null, compTexto:'', miteco:{}, supAno:null, supTexto:'', lf:null, lfFallo:false, lfBase:null, lfNombres:null, lfPins:null, capa:'pnoa' };
+const S = { cat:{}, demo:false, latest:null, fecha:null, hora:0, pol:'ICA', vista:'lista', pos:null, dias:new Map(), det:null, detPol:'PM10', detPolVista:null, evo:'h48', vb:null, comp:[], compEvo:'h48', compFirma:null, compTexto:'', miteco:{}, estado:null, supAno:null, supTexto:'', lf:null, lfFallo:false, lfBase:null, lfNombres:null, lfPins:null, capa:'pnoa' };
 const $ = (id) => document.getElementById(id);
 
 /* ---------- utilidades ---------- */
@@ -1149,11 +1153,33 @@ function pintarHora() {
   const u = ultimaHora(S.dias.get(S.fecha));
   $('btnUltima').disabled = u < 0 || u === S.hora;
 }
+/* ---------- estado de las actualizaciones ---------- */
+function hace(iso) {
+  if (!iso) return '';
+  const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (min < 1) return 'hace un momento';
+  if (min < 60) return `hace ${min} min`;
+  const hr = Math.round(min / 60);
+  if (hr < 48) return `hace ${hr} h`;
+  return `hace ${Math.round(hr / 24)} días`;
+}
+const fechaHora = (iso) => iso ? new Date(iso).toLocaleString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '–';
+function salud() {
+  // verde: comprobación horaria en los últimos 90 min; ámbar: último día; rojo: más
+  const ult = S.estado?.horaria?.ultima || S.latest?.actualizado;
+  if (!ult) return { col:'#9AAAB0', txt:'sin información de actualización' };
+  const min = (Date.now() - new Date(ult).getTime()) / 60000;
+  const err = S.estado?.horaria?.resultado === 'error';
+  if (err || min > 26*60) return { col:'#B3261E', txt:`${err ? 'error en la última comprobación' : 'sin comprobar'} ${hace(ult)}` };
+  if (min > 90) return { col:'#E09F3E', txt:`comprobado ${hace(ult)}` };
+  return { col:'#2E9E5B', txt:`comprobado ${hace(ult)}` };
+}
 function pintarEstado() {
-  const dia = S.dias.get(S.fecha);
-  if (!dia) { $('estado').textContent = `Sin datos del ${fmtFecha(S.fecha)}`; return; }
-  const act = dia.actualizado && !S.demo ? ', actualizado ' + new Date(dia.actualizado).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' }) : '';
-  $('estado').textContent = `${S.fecha === hoyStr() ? 'Hoy' : fmtFecha(S.fecha)} a las ${fmtHora(S.hora)}${act}`;
+  if (S.demo) { $('estado').textContent = 'Datos de demostración'; return; }
+  const s = salud(), ultDia = S.latest?.fecha;
+  const fd = ultDia ? (ultDia.slice(0,4) === hoyStr().slice(0,4) ? fmtCorta(ultDia) : fmtFecha(ultDia)) : '–';
+  $('estado').innerHTML = `<span class="salud" style="background:${s.col}"></span>Datos hasta el ${fd}, ${s.txt}`;
+  $('estado').title = 'Estado de las actualizaciones';
 }
 function pintarAvisoDemo() {
   $('avisoDemo').innerHTML = S.demo ? `<div class="demo"><b>Vista previa con datos simulados.</b> Los reales llegarán al activar la descarga en GitHub.</div>` : '';
@@ -1817,8 +1843,21 @@ async function pintarComp() {
 }
 
 /* ---------- info ---------- */
+function htmlEstado() {
+  const e = S.estado || {}, s = salud();
+  const mitecoUlt = Object.keys(S.miteco).sort().pop();
+  const fila = (a, b) => `<tr><td>${a}</td><td>${b}</td></tr>`;
+  return `<div class="bloque" id="infoEstado"><h3><span class="salud" style="background:${s.col}"></span>Estado de los datos</h3>
+    <div class="tabla"><table class="estado-tabla"><tbody>
+    ${fila('Último día publicado por la Junta', S.latest?.fecha ? `<b>${fmtFecha(S.latest.fecha)}</b> (hasta las ${fmtHora(S.latest.ultima_hora ?? 23)})` : '–')}
+    ${fila('Última comprobación horaria (VPS)', e.horaria ? `<b>${fechaHora(e.horaria.ultima)}</b>, ${hace(e.horaria.ultima)} · ${e.horaria.resultado === 'error' ? '<b style="color:#B3261E">error</b>' : 'correcta'}` : '–')}
+    ${fila('Última descarga de la Agencia Europea', e.eea ? `<b>${fechaHora(e.eea.ultima)}</b>, ${hace(e.eea.ultima)} · ${e.eea.resultado === 'error' ? '<b style="color:#B3261E">error</b>' : 'correcta'}` : 'aún no registrada')}
+    ${fila('Informes del Ministerio hasta', mitecoUlt ? fmtFecha(mitecoUlt) : '–')}
+    </tbody></table></div>
+    <p class="nota">La Junta publica cada día el fichero completo del día anterior, así que lo normal es ver datos hasta ayer. La VPS lo comprueba a los 25 minutos de cada hora; la Agencia Europea, cada día a las 7:40. Punto verde: comprobado en la última hora y media; ámbar: en el último día; rojo: más de un día sin comprobar o con error.</p></div>`;
+}
 function pintarInfo() {
-  let h = `<div class="bloque"><h3>Niveles</h3><div class="escala">${NIVELES.map((n,i) => `<div><i style="background:${COLOR[i]}"></i>${n}</div>`).join('')}</div></div>`;
+  let h = htmlEstado() + `<div class="bloque"><h3>Niveles</h3><div class="escala">${NIVELES.map((n,i) => `<div><i style="background:${COLOR[i]}"></i>${n}</div>`).join('')}</div></div>`;
   h += `<div class="bloque"><h3>Límites de cada nivel (µg/m³)</h3><div class="tabla"><table><thead><tr><th>Nivel</th>${POLS_ICA.map((p) => `<th>${p}</th>`).join('')}</tr></thead><tbody>`;
   NIVELES.forEach((n,i) => { h += `<tr><td><span class="pill" style="background:${COLOR[i]};color:${COLOR_TXT[i]}">${n}</span></td>${POLS_ICA.map((p) => { const b = BANDAS[p]; return `<td>${i === 0 ? '0' : b[i-1]}${i < 5 ? '–'+b[i] : '+'}</td>`; }).join('')}</tr>`; });
   h += `</tbody></table></div><p class="small"><b>Líneas rojas y ocres en las gráficas de partículas:</b> valor límite diario legal de PM10 (50 µg/m³, máximo 35 superaciones al año), límite de 2030 y guía de la OMS (45), límite diario de PM2.5 desde 2030 (25, máximo 18) y guía OMS de PM2.5 (15).</p><p class="small">El índice oficial usa medias de 24 horas para PM10 y PM2.5, que es lo que publica la Junta en esas columnas (medias móviles de 24 h). El CO no forma parte del índice.</p></div>`;
@@ -1945,6 +1984,9 @@ function prepararInstalacion() {
   for (const [f,[pdf,tit]] of Object.entries(MITECO_SEED)) S.miteco[f] = { pdf: MITECO_SEED_BASE + pdf, titulo: 'Predicción para ' + tit, pagina: paginaMiteco(f) };
   try { const m = await getJSON('data/miteco_intrusiones.json'); Object.assign(S.miteco, m.dias || {}); } catch {}
   try { S.latest = await getJSON('data/latest.json'); } catch { S.latest = null; }
+  try { S.estado = await getJSON('data/estado.json'); } catch { S.estado = null; }
+  $('estado').onclick = () => { if (S.demo) return; pintarInfo(); $('info').showModal(); setTimeout(() => $('infoEstado')?.scrollIntoView({ block:'start' }), 60); };
+  setInterval(() => { if (!document.hidden) pintarEstado(); }, 60000);
   S.demo = !S.latest || new URLSearchParams(location.search).has('demo');
   pintarAvisoDemo();
   await irA(S.demo ? hoyStr() : S.latest.fecha);
