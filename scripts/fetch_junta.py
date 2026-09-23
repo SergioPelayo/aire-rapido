@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Aire Rápido · fetch_junta.py · v1.4.0
+Aire Rápido · fetch_junta.py · v1.4.2
 
 Descarga los CSV diarios de la Red de Vigilancia y Control de la Calidad del
 Aire de Andalucía (provincia de Cádiz), se queda con las estaciones del Campo
@@ -36,7 +36,7 @@ import urllib.error
 import urllib.request
 from zoneinfo import ZoneInfo
 
-VERSION = "1.4.0"
+VERSION = "1.4.2"
 BASE_URL = ("https://www.juntadeandalucia.es/medioambiente/atmosfera/"
             "informes_siva/cuantitativo/{y}/CA_{ymd}.csv")
 PRIMER_DIA = dt.date(2021, 10, 25)  # inicio de la serie publicada en este formato
@@ -64,7 +64,8 @@ def norm(s):
 
 def clave_col(h):
     """Identifica qué es cada columna a partir de su cabecera."""
-    k = re.sub(r"[^A-Z0-9]", "", norm(h))
+    k = re.sub(r"[^A-Z0-9_]", "", norm(h))
+    k = re.sub(r"^[DFNV]_", "", k).replace("_", "")
     if k.startswith("PROV"): return "provincia"
     if k.startswith("MUNI"): return "municipio"
     if k.startswith("ESTA"): return "estacion"

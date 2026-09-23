@@ -1,9 +1,7 @@
-# Aire Rápido · actualizar-datos.yml · v1.0.0
+# Aire Rápido · actualizar-datos.yml · v1.1.0 (solo manual: la descarga horaria la hace la VPS)
 name: Actualizar datos calidad del aire
 
 on:
-  schedule:
-    - cron: "25 * * * *"   # cada hora, minuto 25 (UTC)
   workflow_dispatch:
     inputs:
       desde:
